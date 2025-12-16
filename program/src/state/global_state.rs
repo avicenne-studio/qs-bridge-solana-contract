@@ -1,0 +1,54 @@
+use borsh::{BorshDeserialize, BorshSerialize};
+use shank::ShankAccount;
+use solana_program::pubkey::Pubkey;
+
+use crate::{constants::SEED_GLOBAL_STATE, state::Key, traits::PdaSeeds};
+
+#[derive(BorshSerialize, BorshDeserialize, Debug, ShankAccount)]
+pub struct GlobalState {
+    pub key: Key,
+    admin: Pubkey,
+    paused: bool,
+    oracle_threshold_percent: u8,
+    oracle_count: u8,
+    bps_fee: u16,
+    protocol_fee_bps_of_bps: u16,
+    protocol_fee_recipient: Pubkey,
+    oracle_fee_recipient: Pubkey,
+    token_mint: Pubkey,
+    bump: u8,
+}
+
+impl GlobalState {
+    pub const SPACE: usize = std::mem::size_of::<GlobalState>();
+    pub fn new(
+        admin: Pubkey,
+        protocol_fee_recipient: Pubkey,
+        oracle_fee_recipient: Pubkey,
+        token_mint: Pubkey,
+        oracle_threshold_percent: u8,
+        bps_fee: u16,
+        protocol_fee_bps_of_bps: u16,
+        bump: u8,
+    ) -> Self {
+        Self {
+            key: Key::GlobalState,
+            paused: false,
+            oracle_count: 0,
+            admin,
+            protocol_fee_recipient,
+            oracle_fee_recipient,
+            token_mint,
+            oracle_threshold_percent,
+            bps_fee,
+            protocol_fee_bps_of_bps,
+            bump,
+        }
+    }
+}
+
+impl PdaSeeds for GlobalState {
+    fn pda_seeds(&self) -> (Vec<Vec<u8>>, u8) {
+        (vec![SEED_GLOBAL_STATE.to_vec()], self.bump)
+    }
+}

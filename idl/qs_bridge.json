@@ -1,0 +1,164 @@
+{
+  "version": "0.1.0",
+  "name": "qs_bridge",
+  "instructions": [
+    {
+      "name": "InitGlobalState",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Protocol Fee Recipient"
+          ]
+        },
+        {
+          "name": "oracleFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Oracle Fee Recipient"
+          ]
+        },
+        {
+          "name": "tokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Mint"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "initGlobalStateArgs",
+          "type": {
+            "defined": "InitGlobalStateArgs"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 0
+      }
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GlobalState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "key",
+            "type": {
+              "defined": "Key"
+            }
+          },
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "oracleThresholdPercent",
+            "type": "u8"
+          },
+          {
+            "name": "oracleCount",
+            "type": "u8"
+          },
+          {
+            "name": "bpsFee",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeBpsOfBps",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeRecipient",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracleFeeRecipient",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "InitGlobalStateArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bpsFee",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeBpsOfBps",
+            "type": "u16"
+          },
+          {
+            "name": "oracleThresholdPercent",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Key",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "GlobalState"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "origin": "shank",
+    "address": "qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "qs-bridge",
+  "description": "qs-bridge smart contract",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "idl:shank": "node scripts/generate-shank-idl.cjs",
+    "idl:codama": "codama run js",
+    "idl:all": "npm run idl:shank && npm run idl:codama"
+  },
+  "dependencies": {
+    "@codama/nodes-from-anchor": "^1.2.9",
+    "@codama/renderers-js": "^1.4.2"
+  }
+}
