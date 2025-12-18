@@ -6,6 +6,4 @@
  * @see https://github.com/codama-idl/codama
  */
 
-export * from "./domain";
-export * from "./key";
-export * from "./orderData";
+export * from "./globalState";

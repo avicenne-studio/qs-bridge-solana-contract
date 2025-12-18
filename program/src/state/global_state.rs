@@ -7,16 +7,16 @@ use crate::{constants::SEED_GLOBAL_STATE, state::Key, traits::PdaSeeds};
 #[derive(BorshSerialize, BorshDeserialize, Debug, ShankAccount)]
 pub struct GlobalState {
     pub key: Key,
-    admin: Pubkey,
-    paused: bool,
-    oracle_threshold_percent: u8,
-    oracle_count: u8,
-    bps_fee: u16,
-    protocol_fee_bps_of_bps: u16,
-    protocol_fee_recipient: Pubkey,
-    oracle_fee_recipient: Pubkey,
-    token_mint: Pubkey,
-    bump: u8,
+    pub admin: Pubkey,
+    pub paused: bool,
+    pub oracle_threshold_percent: u8,
+    pub oracle_count: u8,
+    pub bps_fee: u16,
+    pub protocol_fee_bps_of_bps: u16,
+    pub protocol_fee_recipient: Pubkey,
+    pub oracle_fee_recipient: Pubkey,
+    pub token_mint: Pubkey,
+    pub bump: u8,
 }
 
 impl GlobalState {

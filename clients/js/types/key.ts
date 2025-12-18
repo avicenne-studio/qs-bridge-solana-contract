@@ -17,6 +17,10 @@ import {
 
 export enum Key {
   GlobalState,
+  Oracle,
+  Pauser,
+  InboundOrder,
+  OutboundOrder,
 }
 
 export type KeyArgs = Key;

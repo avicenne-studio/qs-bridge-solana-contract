@@ -19,6 +19,10 @@ export const QS_BRIDGE_PROGRAM_ADDRESS =
 
 export enum QsBridgeAccount {
   GlobalState,
+  InboundOrder,
+  Oracle,
+  OutboundOrder,
+  Pauser,
 }
 
 export enum QsBridgeInstruction {
