@@ -39,28 +39,28 @@ import { getKeyDecoder, getKeyEncoder, type Key, type KeyArgs } from "../types";
 export type GlobalState = {
   key: Key;
   admin: Address;
-  paused: boolean;
-  oracleThresholdPercent: number;
-  oracleCount: number;
-  bpsFee: number;
-  protocolFeeBpsOfBps: number;
   protocolFeeRecipient: Address;
   oracleFeeRecipient: Address;
   tokenMint: Address;
+  bpsFee: number;
+  protocolFeeBpsOfBps: number;
+  paused: boolean;
+  oracleThresholdPercent: number;
+  oracleCount: number;
   bump: number;
 };
 
 export type GlobalStateArgs = {
   key: KeyArgs;
   admin: Address;
-  paused: boolean;
-  oracleThresholdPercent: number;
-  oracleCount: number;
-  bpsFee: number;
-  protocolFeeBpsOfBps: number;
   protocolFeeRecipient: Address;
   oracleFeeRecipient: Address;
   tokenMint: Address;
+  bpsFee: number;
+  protocolFeeBpsOfBps: number;
+  paused: boolean;
+  oracleThresholdPercent: number;
+  oracleCount: number;
   bump: number;
 };
 
@@ -69,14 +69,14 @@ export function getGlobalStateEncoder(): FixedSizeEncoder<GlobalStateArgs> {
   return getStructEncoder([
     ["key", getKeyEncoder()],
     ["admin", getAddressEncoder()],
-    ["paused", getBooleanEncoder()],
-    ["oracleThresholdPercent", getU8Encoder()],
-    ["oracleCount", getU8Encoder()],
-    ["bpsFee", getU16Encoder()],
-    ["protocolFeeBpsOfBps", getU16Encoder()],
     ["protocolFeeRecipient", getAddressEncoder()],
     ["oracleFeeRecipient", getAddressEncoder()],
     ["tokenMint", getAddressEncoder()],
+    ["bpsFee", getU16Encoder()],
+    ["protocolFeeBpsOfBps", getU16Encoder()],
+    ["paused", getBooleanEncoder()],
+    ["oracleThresholdPercent", getU8Encoder()],
+    ["oracleCount", getU8Encoder()],
     ["bump", getU8Encoder()],
   ]);
 }
@@ -86,14 +86,14 @@ export function getGlobalStateDecoder(): FixedSizeDecoder<GlobalState> {
   return getStructDecoder([
     ["key", getKeyDecoder()],
     ["admin", getAddressDecoder()],
-    ["paused", getBooleanDecoder()],
-    ["oracleThresholdPercent", getU8Decoder()],
-    ["oracleCount", getU8Decoder()],
-    ["bpsFee", getU16Decoder()],
-    ["protocolFeeBpsOfBps", getU16Decoder()],
     ["protocolFeeRecipient", getAddressDecoder()],
     ["oracleFeeRecipient", getAddressDecoder()],
     ["tokenMint", getAddressDecoder()],
+    ["bpsFee", getU16Decoder()],
+    ["protocolFeeBpsOfBps", getU16Decoder()],
+    ["paused", getBooleanDecoder()],
+    ["oracleThresholdPercent", getU8Decoder()],
+    ["oracleCount", getU8Decoder()],
     ["bump", getU8Decoder()],
   ]);
 }

@@ -1,9 +1,10 @@
 use borsh::{BorshDeserialize, BorshSerialize};
+use mpl_token_metadata::{self, instructions::CreateMetadataAccountV3CpiBuilder, types::DataV2};
 #[allow(deprecated)]
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
-    program::invoke_signed,
+    program::{invoke, invoke_signed},
     program_error::ProgramError,
     program_pack::Pack,
     pubkey::Pubkey,
@@ -12,13 +13,19 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
-use crate::{constants::SEED_GLOBAL_STATE, state::global_state::GlobalState};
+use crate::{
+    constants::{SEED_GLOBAL_STATE, TOKEN_DECIMALS},
+    state::global_state::GlobalState,
+};
 
 #[derive(BorshSerialize, BorshDeserialize, Clone, Debug)]
 pub struct InitGlobalStateArgs {
     pub bps_fee: u16,
     pub protocol_fee_bps_of_bps: u16,
     pub oracle_threshold_percent: u8,
+    pub uri: String,
+    pub name: String,
+    pub symbol: String,
 }
 
 pub fn process_init_global_state(
@@ -33,12 +40,18 @@ pub fn process_init_global_state(
     let protocol_fee_recipient_ai = next_account_info(acc_iter)?;
     let oracle_fee_recipient_ai = next_account_info(acc_iter)?;
     let token_mint_ai = next_account_info(acc_iter)?;
-    let system_program = next_account_info(acc_iter)?;
+    let token_metadata_ai = next_account_info(acc_iter)?;
+    let system_program_ai = next_account_info(acc_iter)?;
+    let token_program_ai = next_account_info(acc_iter)?;
+    let token_metadata_program_ai = next_account_info(acc_iter)?;
 
     if !payer_ai.is_signer {
         return Err(ProgramError::MissingRequiredSignature);
     }
-    if *system_program.key != solana_program::system_program::id() {
+    if *token_program_ai.key != spl_token::id() {
+        return Err(ProgramError::IncorrectProgramId);
+    }
+    if *system_program_ai.key != solana_program::system_program::id() {
         return Err(ProgramError::InvalidAccountData);
     }
     let (global_state_pda, global_state_bump) =
@@ -63,12 +76,55 @@ pub fn process_init_global_state(
         return Err(ProgramError::InvalidArgument);
     }
 
-    if *token_mint_ai.owner != spl_token::ID {
-        return Err(ProgramError::InvalidAccountOwner);
-    }
+    let mint_space = spl_token::state::Mint::LEN;
+    let mint_lamports = Rent::get()?.minimum_balance(mint_space);
+    let ix = system_instruction::create_account(
+        payer_ai.key,
+        token_mint_ai.key,
+        mint_lamports,
+        mint_space as u64,
+        token_program_ai.key,
+    );
+    invoke(
+        &ix,
+        &[
+            payer_ai.clone(),
+            token_mint_ai.clone(),
+            system_program_ai.clone(),
+        ],
+    )?;
 
-    let mint_data = token_mint_ai.try_borrow_data()?;
-    spl_token::state::Mint::unpack(&mint_data).map_err(|_| ProgramError::InvalidAccountData)?;
+    let ix = spl_token::instruction::initialize_mint2(
+        token_program_ai.key,
+        token_mint_ai.key,
+        global_state_ai.key,
+        Some(global_state_ai.key),
+        TOKEN_DECIMALS,
+    )?;
+
+    invoke(&ix, &[token_mint_ai.clone(), token_program_ai.clone()])?;
+
+    let mint_metadata = DataV2 {
+        name: args.name,
+        symbol: args.symbol,
+        uri: args.uri,
+        seller_fee_basis_points: 0,
+        creators: None,
+        collection: None,
+        uses: None,
+    };
+
+    let signer_seeds = &[SEED_GLOBAL_STATE, &[global_state_bump]];
+    CreateMetadataAccountV3CpiBuilder::new(token_metadata_program_ai)
+        .metadata(token_metadata_ai)
+        .mint(token_mint_ai)
+        .mint_authority(global_state_ai)
+        .payer(payer_ai)
+        .update_authority(global_state_ai, true)
+        .system_program(system_program_ai)
+        .data(mint_metadata)
+        .is_mutable(true)
+        .invoke_signed(&[signer_seeds])?;
 
     let global_state = GlobalState::new(
         *payer_ai.key,
@@ -95,7 +151,7 @@ pub fn process_init_global_state(
         &[
             payer_ai.clone(),
             global_state_ai.clone(),
-            system_program.clone(),
+            system_program_ai.clone(),
         ],
         &[&[SEED_GLOBAL_STATE, &[global_state_bump]]],
     )?;

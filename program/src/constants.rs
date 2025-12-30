@@ -10,3 +10,4 @@ pub const PROTOCOL_VERSION: &str = "1";
 pub const QUBIC_NETWORK_ID: u32 = 1;
 pub const SOLANA_NETWORK_ID: u32 = 2;
 pub const QUBIC_CONTRACT_ADDRESS: [u8; 32] = [0u8; 32];
+pub const TOKEN_DECIMALS: u8 = 9;

@@ -7,20 +7,26 @@
  */
 
 import {
+  addDecoderSizePrefix,
+  addEncoderSizePrefix,
   combineCodec,
   getStructDecoder,
   getStructEncoder,
   getU16Decoder,
   getU16Encoder,
+  getU32Decoder,
+  getU32Encoder,
   getU8Decoder,
   getU8Encoder,
+  getUtf8Decoder,
+  getUtf8Encoder,
   transformEncoder,
   type AccountMeta,
   type AccountSignerMeta,
   type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
+  type Codec,
+  type Decoder,
+  type Encoder,
   type Instruction,
   type InstructionWithAccounts,
   type InstructionWithData,
@@ -46,8 +52,13 @@ export type InitGlobalStateInstruction<
   TAccountProtocolFeeRecipient extends string | AccountMeta<string> = string,
   TAccountOracleFeeRecipient extends string | AccountMeta<string> = string,
   TAccountTokenMint extends string | AccountMeta<string> = string,
+  TAccountTokenMetadata extends string | AccountMeta<string> = string,
   TAccountSystemProgram extends string | AccountMeta<string> =
     "11111111111111111111111111111111",
+  TAccountTokenProgram extends string | AccountMeta<string> =
+    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+  TAccountTokenMetadataProgram extends string | AccountMeta<string> =
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
   InstructionWithData<ReadonlyUint8Array> &
@@ -67,11 +78,21 @@ export type InitGlobalStateInstruction<
         ? ReadonlyAccount<TAccountOracleFeeRecipient>
         : TAccountOracleFeeRecipient,
       TAccountTokenMint extends string
-        ? ReadonlyAccount<TAccountTokenMint>
+        ? WritableSignerAccount<TAccountTokenMint> &
+            AccountSignerMeta<TAccountTokenMint>
         : TAccountTokenMint,
+      TAccountTokenMetadata extends string
+        ? WritableAccount<TAccountTokenMetadata>
+        : TAccountTokenMetadata,
       TAccountSystemProgram extends string
         ? ReadonlyAccount<TAccountSystemProgram>
         : TAccountSystemProgram,
+      TAccountTokenProgram extends string
+        ? ReadonlyAccount<TAccountTokenProgram>
+        : TAccountTokenProgram,
+      TAccountTokenMetadataProgram extends string
+        ? ReadonlyAccount<TAccountTokenMetadataProgram>
+        : TAccountTokenMetadataProgram,
       ...TRemainingAccounts,
     ]
   >;
@@ -81,36 +102,48 @@ export type InitGlobalStateInstructionData = {
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   oracleThresholdPercent: number;
+  uri: string;
+  name: string;
+  symbol: string;
 };
 
 export type InitGlobalStateInstructionDataArgs = {
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   oracleThresholdPercent: number;
+  uri: string;
+  name: string;
+  symbol: string;
 };
 
-export function getInitGlobalStateInstructionDataEncoder(): FixedSizeEncoder<InitGlobalStateInstructionDataArgs> {
+export function getInitGlobalStateInstructionDataEncoder(): Encoder<InitGlobalStateInstructionDataArgs> {
   return transformEncoder(
     getStructEncoder([
       ["discriminator", getU8Encoder()],
       ["bpsFee", getU16Encoder()],
       ["protocolFeeBpsOfBps", getU16Encoder()],
       ["oracleThresholdPercent", getU8Encoder()],
+      ["uri", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
+      ["name", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
+      ["symbol", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
     ]),
     (value) => ({ ...value, discriminator: INIT_GLOBAL_STATE_DISCRIMINATOR }),
   );
 }
 
-export function getInitGlobalStateInstructionDataDecoder(): FixedSizeDecoder<InitGlobalStateInstructionData> {
+export function getInitGlobalStateInstructionDataDecoder(): Decoder<InitGlobalStateInstructionData> {
   return getStructDecoder([
     ["discriminator", getU8Decoder()],
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
     ["oracleThresholdPercent", getU8Decoder()],
+    ["uri", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
+    ["name", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
+    ["symbol", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
   ]);
 }
 
-export function getInitGlobalStateInstructionDataCodec(): FixedSizeCodec<
+export function getInitGlobalStateInstructionDataCodec(): Codec<
   InitGlobalStateInstructionDataArgs,
   InitGlobalStateInstructionData
 > {
@@ -126,7 +159,10 @@ export type InitGlobalStateInput<
   TAccountProtocolFeeRecipient extends string = string,
   TAccountOracleFeeRecipient extends string = string,
   TAccountTokenMint extends string = string,
+  TAccountTokenMetadata extends string = string,
   TAccountSystemProgram extends string = string,
+  TAccountTokenProgram extends string = string,
+  TAccountTokenMetadataProgram extends string = string,
 > = {
   /** Admin */
   admin: TransactionSigner<TAccountAdmin>;
@@ -137,12 +173,21 @@ export type InitGlobalStateInput<
   /** Oracle Fee Recipient */
   oracleFeeRecipient: Address<TAccountOracleFeeRecipient>;
   /** Token Mint */
-  tokenMint: Address<TAccountTokenMint>;
+  tokenMint: TransactionSigner<TAccountTokenMint>;
+  /** Token Metadata */
+  tokenMetadata: Address<TAccountTokenMetadata>;
   /** System Program Account */
   systemProgram?: Address<TAccountSystemProgram>;
+  /** Token Program Account */
+  tokenProgram?: Address<TAccountTokenProgram>;
+  /** Token Metadata Program Account */
+  tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
   bpsFee: InitGlobalStateInstructionDataArgs["bpsFee"];
   protocolFeeBpsOfBps: InitGlobalStateInstructionDataArgs["protocolFeeBpsOfBps"];
   oracleThresholdPercent: InitGlobalStateInstructionDataArgs["oracleThresholdPercent"];
+  uri: InitGlobalStateInstructionDataArgs["uri"];
+  name: InitGlobalStateInstructionDataArgs["name"];
+  symbol: InitGlobalStateInstructionDataArgs["symbol"];
 };
 
 export function getInitGlobalStateInstruction<
@@ -151,7 +196,10 @@ export function getInitGlobalStateInstruction<
   TAccountProtocolFeeRecipient extends string,
   TAccountOracleFeeRecipient extends string,
   TAccountTokenMint extends string,
+  TAccountTokenMetadata extends string,
   TAccountSystemProgram extends string,
+  TAccountTokenProgram extends string,
+  TAccountTokenMetadataProgram extends string,
   TProgramAddress extends Address = typeof QS_BRIDGE_PROGRAM_ADDRESS,
 >(
   input: InitGlobalStateInput<
@@ -160,7 +208,10 @@ export function getInitGlobalStateInstruction<
     TAccountProtocolFeeRecipient,
     TAccountOracleFeeRecipient,
     TAccountTokenMint,
-    TAccountSystemProgram
+    TAccountTokenMetadata,
+    TAccountSystemProgram,
+    TAccountTokenProgram,
+    TAccountTokenMetadataProgram
   >,
   config?: { programAddress?: TProgramAddress },
 ): InitGlobalStateInstruction<
@@ -170,7 +221,10 @@ export function getInitGlobalStateInstruction<
   TAccountProtocolFeeRecipient,
   TAccountOracleFeeRecipient,
   TAccountTokenMint,
-  TAccountSystemProgram
+  TAccountTokenMetadata,
+  TAccountSystemProgram,
+  TAccountTokenProgram,
+  TAccountTokenMetadataProgram
 > {
   // Program address.
   const programAddress = config?.programAddress ?? QS_BRIDGE_PROGRAM_ADDRESS;
@@ -187,8 +241,14 @@ export function getInitGlobalStateInstruction<
       value: input.oracleFeeRecipient ?? null,
       isWritable: false,
     },
-    tokenMint: { value: input.tokenMint ?? null, isWritable: false },
+    tokenMint: { value: input.tokenMint ?? null, isWritable: true },
+    tokenMetadata: { value: input.tokenMetadata ?? null, isWritable: true },
     systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+    tokenMetadataProgram: {
+      value: input.tokenMetadataProgram ?? null,
+      isWritable: false,
+    },
   };
   const accounts = originalAccounts as Record<
     keyof typeof originalAccounts,
@@ -203,6 +263,14 @@ export function getInitGlobalStateInstruction<
     accounts.systemProgram.value =
       "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
   }
+  if (!accounts.tokenProgram.value) {
+    accounts.tokenProgram.value =
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
+  }
+  if (!accounts.tokenMetadataProgram.value) {
+    accounts.tokenMetadataProgram.value =
+      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" as Address<"metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s">;
+  }
 
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
   return Object.freeze({
@@ -212,7 +280,10 @@ export function getInitGlobalStateInstruction<
       getAccountMeta(accounts.protocolFeeRecipient),
       getAccountMeta(accounts.oracleFeeRecipient),
       getAccountMeta(accounts.tokenMint),
+      getAccountMeta(accounts.tokenMetadata),
       getAccountMeta(accounts.systemProgram),
+      getAccountMeta(accounts.tokenProgram),
+      getAccountMeta(accounts.tokenMetadataProgram),
     ],
     data: getInitGlobalStateInstructionDataEncoder().encode(
       args as InitGlobalStateInstructionDataArgs,
@@ -225,7 +296,10 @@ export function getInitGlobalStateInstruction<
     TAccountProtocolFeeRecipient,
     TAccountOracleFeeRecipient,
     TAccountTokenMint,
-    TAccountSystemProgram
+    TAccountTokenMetadata,
+    TAccountSystemProgram,
+    TAccountTokenProgram,
+    TAccountTokenMetadataProgram
   >);
 }
 
@@ -245,8 +319,14 @@ export type ParsedInitGlobalStateInstruction<
     oracleFeeRecipient: TAccountMetas[3];
     /** Token Mint */
     tokenMint: TAccountMetas[4];
+    /** Token Metadata */
+    tokenMetadata: TAccountMetas[5];
     /** System Program Account */
-    systemProgram: TAccountMetas[5];
+    systemProgram: TAccountMetas[6];
+    /** Token Program Account */
+    tokenProgram: TAccountMetas[7];
+    /** Token Metadata Program Account */
+    tokenMetadataProgram: TAccountMetas[8];
   };
   data: InitGlobalStateInstructionData;
 };
@@ -259,7 +339,7 @@ export function parseInitGlobalStateInstruction<
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>,
 ): ParsedInitGlobalStateInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 6) {
+  if (instruction.accounts.length < 9) {
     // TODO: Coded error.
     throw new Error("Not enough accounts");
   }
@@ -277,7 +357,10 @@ export function parseInitGlobalStateInstruction<
       protocolFeeRecipient: getNextAccount(),
       oracleFeeRecipient: getNextAccount(),
       tokenMint: getNextAccount(),
+      tokenMetadata: getNextAccount(),
       systemProgram: getNextAccount(),
+      tokenProgram: getNextAccount(),
+      tokenMetadataProgram: getNextAccount(),
     },
     data: getInitGlobalStateInstructionDataDecoder().decode(instruction.data),
   };

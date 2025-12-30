@@ -39,10 +39,18 @@
         },
         {
           "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false,
+          "isMut": true,
+          "isSigner": true,
           "docs": [
             "Token Mint"
+          ]
+        },
+        {
+          "name": "tokenMetadata",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Token Metadata"
           ]
         },
         {
@@ -51,6 +59,22 @@
           "isSigner": false,
           "docs": [
             "System Program Account"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Program Account"
+          ]
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Metadata Program Account"
           ]
         }
       ],
@@ -85,26 +109,6 @@
             "type": "publicKey"
           },
           {
-            "name": "paused",
-            "type": "bool"
-          },
-          {
-            "name": "oracleThresholdPercent",
-            "type": "u8"
-          },
-          {
-            "name": "oracleCount",
-            "type": "u8"
-          },
-          {
-            "name": "bpsFee",
-            "type": "u16"
-          },
-          {
-            "name": "protocolFeeBpsOfBps",
-            "type": "u16"
-          },
-          {
             "name": "protocolFeeRecipient",
             "type": "publicKey"
           },
@@ -115,6 +119,26 @@
           {
             "name": "tokenMint",
             "type": "publicKey"
+          },
+          {
+            "name": "bpsFee",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeBpsOfBps",
+            "type": "u16"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "oracleThresholdPercent",
+            "type": "u8"
+          },
+          {
+            "name": "oracleCount",
+            "type": "u8"
           },
           {
             "name": "bump",
@@ -295,6 +319,18 @@
           {
             "name": "oracleThresholdPercent",
             "type": "u8"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
           }
         ]
       }

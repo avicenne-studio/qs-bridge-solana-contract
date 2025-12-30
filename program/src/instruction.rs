@@ -10,7 +10,10 @@ pub enum QSBridgeInstruction {
     #[account(1, writable, name = "Global State", desc = "Global State")]
     #[account(2, name = "Protocol Fee Recipient", desc = "Protocol Fee Recipient")]
     #[account(3, name = "Oracle Fee Recipient", desc = "Oracle Fee Recipient")]
-    #[account(4, name = "Token Mint", desc = "Token Mint")]
-    #[account(5, name = "System Program", desc = "System Program Account")]
+    #[account(4, writable, signer, name = "Token Mint", desc = "Token Mint")]
+    #[account(5, writable, name = "Token Metadata", desc = "Token Metadata")]
+    #[account(6, name = "System Program", desc = "System Program Account")]
+    #[account(7, name = "Token Program", desc = "Token Program Account")]
+    #[account(8, name = "Token Metadata Program", desc = "Token Metadata Program Account")]
     InitGlobalState(InitGlobalStateArgs),
 }

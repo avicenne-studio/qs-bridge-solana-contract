@@ -8,14 +8,14 @@ use crate::{constants::SEED_GLOBAL_STATE, state::Key, traits::PdaSeeds};
 pub struct GlobalState {
     pub key: Key,
     pub admin: Pubkey,
-    pub paused: bool,
-    pub oracle_threshold_percent: u8,
-    pub oracle_count: u8,
-    pub bps_fee: u16,
-    pub protocol_fee_bps_of_bps: u16,
     pub protocol_fee_recipient: Pubkey,
     pub oracle_fee_recipient: Pubkey,
     pub token_mint: Pubkey,
+    pub bps_fee: u16,
+    pub protocol_fee_bps_of_bps: u16,
+    pub paused: bool,
+    pub oracle_threshold_percent: u8,
+    pub oracle_count: u8,
     pub bump: u8,
 }
 
