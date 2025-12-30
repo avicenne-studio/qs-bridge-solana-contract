@@ -3,7 +3,14 @@ use solana_program::{msg, program_error::ProgramError};
 use thiserror::Error;
 
 #[derive(Error, Clone, Debug, Eq, PartialEq, FromPrimitive)]
-pub enum QSBridgeError {}
+pub enum QSBridgeError {
+    #[error("Program is paused")]
+    ProgramPaused,
+    #[error("Unsupported network")]
+    UnsupportedNetwork,
+    #[error("Unsupported out token")]
+    UnsupportedOutToken,
+}
 
 impl From<QSBridgeError> for ProgramError {
     fn from(e: QSBridgeError) -> Self {

@@ -20,7 +20,7 @@ pub struct GlobalState {
 }
 
 impl GlobalState {
-    pub const SPACE: usize = std::mem::size_of::<GlobalState>();
+    pub const SPACE: usize = 1 + 32 + 32 + 32 + 32 + 2 + 2 + 1 + 1 + 1 + 1;
     pub fn new(
         admin: Pubkey,
         protocol_fee_recipient: Pubkey,

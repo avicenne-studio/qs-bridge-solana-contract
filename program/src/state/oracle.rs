@@ -12,7 +12,7 @@ pub struct Oracle {
 }
 
 impl Oracle {
-    pub const SPACE: usize = std::mem::size_of::<Oracle>();
+    pub const SPACE: usize = 1 + 32 + 1;
     pub fn new(oracle_pubkey: Pubkey, bump: u8) -> Self {
         Self {
             key: Key::Oracle,

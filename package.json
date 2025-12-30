@@ -9,7 +9,7 @@
     "idl:shank": "node scripts/generate-shank-idl.cjs",
     "idl:codama": "codama run js",
     "idl:all": "npm run idl:shank && npm run idl:codama",
-    "test": "jest",
+    "test": "cargo build-sbf && jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {

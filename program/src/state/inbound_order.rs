@@ -38,7 +38,7 @@ pub struct OrderData {
 }
 
 impl InboundOrder {
-    pub const SPACE: usize = std::mem::size_of::<InboundOrder>();
+    pub const SPACE: usize = 1 + 4 + 32 + 1;
     pub fn new(network_in: u32, nonce: [u8; 32], bump: u8) -> Self {
         Self {
             key: Key::InboundOrder,

@@ -12,7 +12,10 @@ import {
   type Address,
   type ReadonlyUint8Array,
 } from "@solana/kit";
-import { type ParsedInitGlobalStateInstruction } from "../instructions";
+import {
+  type ParsedInitGlobalStateInstruction,
+  type ParsedOutboundInstruction,
+} from "../instructions";
 
 export const QS_BRIDGE_PROGRAM_ADDRESS =
   "qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H" as Address<"qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H">;
@@ -27,6 +30,7 @@ export enum QsBridgeAccount {
 
 export enum QsBridgeInstruction {
   InitGlobalState,
+  Outbound,
 }
 
 export function identifyQsBridgeInstruction(
@@ -36,6 +40,9 @@ export function identifyQsBridgeInstruction(
   if (containsBytes(data, getU8Encoder().encode(0), 0)) {
     return QsBridgeInstruction.InitGlobalState;
   }
+  if (containsBytes(data, getU8Encoder().encode(1), 0)) {
+    return QsBridgeInstruction.Outbound;
+  }
   throw new Error(
     "The provided instruction could not be identified as a qsBridge instruction.",
   );
@@ -43,6 +50,10 @@ export function identifyQsBridgeInstruction(
 
 export type ParsedQsBridgeInstruction<
   TProgram extends string = "qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H",
-> = {
-  instructionType: QsBridgeInstruction.InitGlobalState;
-} & ParsedInitGlobalStateInstruction<TProgram>;
+> =
+  | ({
+      instructionType: QsBridgeInstruction.InitGlobalState;
+    } & ParsedInitGlobalStateInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.Outbound;
+    } & ParsedOutboundInstruction<TProgram>);

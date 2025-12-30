@@ -23,6 +23,8 @@ import {
   getU128Encoder,
   getU32Decoder,
   getU32Encoder,
+  getU64Decoder,
+  getU64Encoder,
   getU8Decoder,
   getU8Encoder,
   type Account,
@@ -77,7 +79,7 @@ export function getOutboundOrderEncoder(): FixedSizeEncoder<OutboundOrderArgs> {
     ["tokenOut", fixEncoderSize(getBytesEncoder(), 32)],
     ["fromAddress", fixEncoderSize(getBytesEncoder(), 32)],
     ["toAddress", fixEncoderSize(getBytesEncoder(), 32)],
-    ["amount", getU128Encoder()],
+    ["amount", getU64Encoder()],
     ["relayerFee", getU128Encoder()],
     ["nonce", fixEncoderSize(getBytesEncoder(), 32)],
     ["bump", getU8Encoder()],
@@ -94,7 +96,7 @@ export function getOutboundOrderDecoder(): FixedSizeDecoder<OutboundOrder> {
     ["tokenOut", fixDecoderSize(getBytesDecoder(), 32)],
     ["fromAddress", fixDecoderSize(getBytesDecoder(), 32)],
     ["toAddress", fixDecoderSize(getBytesDecoder(), 32)],
-    ["amount", getU128Decoder()],
+    ["amount", getU64Decoder()],
     ["relayerFee", getU128Decoder()],
     ["nonce", fixDecoderSize(getBytesDecoder(), 32)],
     ["bump", getU8Decoder()],
@@ -167,5 +169,5 @@ export async function fetchAllMaybeOutboundOrder(
 }
 
 export function getOutboundOrderSize(): number {
-  return 202;
+  return 194;
 }

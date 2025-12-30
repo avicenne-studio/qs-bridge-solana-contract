@@ -1,7 +1,10 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankInstruction;
 
-use crate::processor::process_init_global_state::InitGlobalStateArgs;
+use crate::{
+    processor::process_init_global_state::InitGlobalStateArgs,
+    processor::process_outbound::OutboundOrderArgs,
+};
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, ShankInstruction)]
 #[rustfmt::skip]
@@ -16,4 +19,12 @@ pub enum QSBridgeInstruction {
     #[account(7, name = "Token Program", desc = "Token Program Account")]
     #[account(8, name = "Token Metadata Program", desc = "Token Metadata Program Account")]
     InitGlobalState(InitGlobalStateArgs),
+    #[account(0, writable, signer, name = "User", desc = "User who is locking tokens")]
+    #[account(1, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Outbound Order", desc = "Outbound Order PDA")]
+    #[account(3, writable, name = "User Token Account", desc = "User's token account to burn from")]
+    #[account(4, writable, name = "Token Mint", desc = "Token Mint")]
+    #[account(5, name = "Token Program", desc = "Token Program Account")]
+    #[account(6, name = "System Program", desc = "System Program Account")]
+    Outbound(OutboundOrderArgs),
 }
