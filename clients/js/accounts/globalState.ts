@@ -40,7 +40,6 @@ export type GlobalState = {
   key: Key;
   admin: Address;
   protocolFeeRecipient: Address;
-  oracleFeeRecipient: Address;
   tokenMint: Address;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
@@ -54,7 +53,6 @@ export type GlobalStateArgs = {
   key: KeyArgs;
   admin: Address;
   protocolFeeRecipient: Address;
-  oracleFeeRecipient: Address;
   tokenMint: Address;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
@@ -70,7 +68,6 @@ export function getGlobalStateEncoder(): FixedSizeEncoder<GlobalStateArgs> {
     ["key", getKeyEncoder()],
     ["admin", getAddressEncoder()],
     ["protocolFeeRecipient", getAddressEncoder()],
-    ["oracleFeeRecipient", getAddressEncoder()],
     ["tokenMint", getAddressEncoder()],
     ["bpsFee", getU16Encoder()],
     ["protocolFeeBpsOfBps", getU16Encoder()],
@@ -87,7 +84,6 @@ export function getGlobalStateDecoder(): FixedSizeDecoder<GlobalState> {
     ["key", getKeyDecoder()],
     ["admin", getAddressDecoder()],
     ["protocolFeeRecipient", getAddressDecoder()],
-    ["oracleFeeRecipient", getAddressDecoder()],
     ["tokenMint", getAddressDecoder()],
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
@@ -160,5 +156,5 @@ export async function fetchAllMaybeGlobalState(
 }
 
 export function getGlobalStateSize(): number {
-  return 137;
+  return 105;
 }

@@ -38,7 +38,6 @@ pub fn process_init_global_state(
     let payer_ai = next_account_info(acc_iter)?;
     let global_state_ai = next_account_info(acc_iter)?;
     let protocol_fee_recipient_ai = next_account_info(acc_iter)?;
-    let oracle_fee_recipient_ai = next_account_info(acc_iter)?;
     let token_mint_ai = next_account_info(acc_iter)?;
     let token_metadata_ai = next_account_info(acc_iter)?;
     let system_program_ai = next_account_info(acc_iter)?;
@@ -129,7 +128,6 @@ pub fn process_init_global_state(
     let global_state = GlobalState::new(
         *payer_ai.key,
         *protocol_fee_recipient_ai.key,
-        *oracle_fee_recipient_ai.key,
         *token_mint_ai.key,
         args.oracle_threshold_percent,
         args.bps_fee,

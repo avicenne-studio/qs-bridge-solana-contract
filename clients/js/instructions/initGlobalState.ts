@@ -50,7 +50,6 @@ export type InitGlobalStateInstruction<
   TAccountAdmin extends string | AccountMeta<string> = string,
   TAccountGlobalState extends string | AccountMeta<string> = string,
   TAccountProtocolFeeRecipient extends string | AccountMeta<string> = string,
-  TAccountOracleFeeRecipient extends string | AccountMeta<string> = string,
   TAccountTokenMint extends string | AccountMeta<string> = string,
   TAccountTokenMetadata extends string | AccountMeta<string> = string,
   TAccountSystemProgram extends string | AccountMeta<string> =
@@ -74,9 +73,6 @@ export type InitGlobalStateInstruction<
       TAccountProtocolFeeRecipient extends string
         ? ReadonlyAccount<TAccountProtocolFeeRecipient>
         : TAccountProtocolFeeRecipient,
-      TAccountOracleFeeRecipient extends string
-        ? ReadonlyAccount<TAccountOracleFeeRecipient>
-        : TAccountOracleFeeRecipient,
       TAccountTokenMint extends string
         ? WritableSignerAccount<TAccountTokenMint> &
             AccountSignerMeta<TAccountTokenMint>
@@ -157,7 +153,6 @@ export type InitGlobalStateInput<
   TAccountAdmin extends string = string,
   TAccountGlobalState extends string = string,
   TAccountProtocolFeeRecipient extends string = string,
-  TAccountOracleFeeRecipient extends string = string,
   TAccountTokenMint extends string = string,
   TAccountTokenMetadata extends string = string,
   TAccountSystemProgram extends string = string,
@@ -170,8 +165,6 @@ export type InitGlobalStateInput<
   globalState: Address<TAccountGlobalState>;
   /** Protocol Fee Recipient */
   protocolFeeRecipient: Address<TAccountProtocolFeeRecipient>;
-  /** Oracle Fee Recipient */
-  oracleFeeRecipient: Address<TAccountOracleFeeRecipient>;
   /** Token Mint */
   tokenMint: TransactionSigner<TAccountTokenMint>;
   /** Token Metadata */
@@ -194,7 +187,6 @@ export function getInitGlobalStateInstruction<
   TAccountAdmin extends string,
   TAccountGlobalState extends string,
   TAccountProtocolFeeRecipient extends string,
-  TAccountOracleFeeRecipient extends string,
   TAccountTokenMint extends string,
   TAccountTokenMetadata extends string,
   TAccountSystemProgram extends string,
@@ -206,7 +198,6 @@ export function getInitGlobalStateInstruction<
     TAccountAdmin,
     TAccountGlobalState,
     TAccountProtocolFeeRecipient,
-    TAccountOracleFeeRecipient,
     TAccountTokenMint,
     TAccountTokenMetadata,
     TAccountSystemProgram,
@@ -219,7 +210,6 @@ export function getInitGlobalStateInstruction<
   TAccountAdmin,
   TAccountGlobalState,
   TAccountProtocolFeeRecipient,
-  TAccountOracleFeeRecipient,
   TAccountTokenMint,
   TAccountTokenMetadata,
   TAccountSystemProgram,
@@ -235,10 +225,6 @@ export function getInitGlobalStateInstruction<
     globalState: { value: input.globalState ?? null, isWritable: true },
     protocolFeeRecipient: {
       value: input.protocolFeeRecipient ?? null,
-      isWritable: false,
-    },
-    oracleFeeRecipient: {
-      value: input.oracleFeeRecipient ?? null,
       isWritable: false,
     },
     tokenMint: { value: input.tokenMint ?? null, isWritable: true },
@@ -278,7 +264,6 @@ export function getInitGlobalStateInstruction<
       getAccountMeta(accounts.admin),
       getAccountMeta(accounts.globalState),
       getAccountMeta(accounts.protocolFeeRecipient),
-      getAccountMeta(accounts.oracleFeeRecipient),
       getAccountMeta(accounts.tokenMint),
       getAccountMeta(accounts.tokenMetadata),
       getAccountMeta(accounts.systemProgram),
@@ -294,7 +279,6 @@ export function getInitGlobalStateInstruction<
     TAccountAdmin,
     TAccountGlobalState,
     TAccountProtocolFeeRecipient,
-    TAccountOracleFeeRecipient,
     TAccountTokenMint,
     TAccountTokenMetadata,
     TAccountSystemProgram,
@@ -315,18 +299,16 @@ export type ParsedInitGlobalStateInstruction<
     globalState: TAccountMetas[1];
     /** Protocol Fee Recipient */
     protocolFeeRecipient: TAccountMetas[2];
-    /** Oracle Fee Recipient */
-    oracleFeeRecipient: TAccountMetas[3];
     /** Token Mint */
-    tokenMint: TAccountMetas[4];
+    tokenMint: TAccountMetas[3];
     /** Token Metadata */
-    tokenMetadata: TAccountMetas[5];
+    tokenMetadata: TAccountMetas[4];
     /** System Program Account */
-    systemProgram: TAccountMetas[6];
+    systemProgram: TAccountMetas[5];
     /** Token Program Account */
-    tokenProgram: TAccountMetas[7];
+    tokenProgram: TAccountMetas[6];
     /** Token Metadata Program Account */
-    tokenMetadataProgram: TAccountMetas[8];
+    tokenMetadataProgram: TAccountMetas[7];
   };
   data: InitGlobalStateInstructionData;
 };
@@ -339,7 +321,7 @@ export function parseInitGlobalStateInstruction<
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>,
 ): ParsedInitGlobalStateInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 9) {
+  if (instruction.accounts.length < 8) {
     // TODO: Coded error.
     throw new Error("Not enough accounts");
   }
@@ -355,7 +337,6 @@ export function parseInitGlobalStateInstruction<
       admin: getNextAccount(),
       globalState: getNextAccount(),
       protocolFeeRecipient: getNextAccount(),
-      oracleFeeRecipient: getNextAccount(),
       tokenMint: getNextAccount(),
       tokenMetadata: getNextAccount(),
       systemProgram: getNextAccount(),

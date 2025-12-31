@@ -79,7 +79,6 @@ describe("outbound test", () => {
     globalStatePda = gsPda;
 
     const protocolFeeRecipient = await generateKeyPairSigner();
-    const oracleFeeRecipient = await generateKeyPairSigner();
 
     const [tokenMetadata] = await getProgramDerivedAddress({
       programAddress: METADATA_PROGRAM_ADDRESS,
@@ -95,7 +94,6 @@ describe("outbound test", () => {
       admin,
       globalState: globalStatePda,
       protocolFeeRecipient: protocolFeeRecipient.address,
-      oracleFeeRecipient: oracleFeeRecipient.address,
       tokenMint: tokenMint,
       systemProgram: SystemProgram.programId.toString() as Address,
       tokenMetadata,

@@ -30,14 +30,6 @@
           ]
         },
         {
-          "name": "oracleFeeRecipient",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Oracle Fee Recipient"
-          ]
-        },
-        {
           "name": "tokenMint",
           "isMut": true,
           "isSigner": true,
@@ -183,10 +175,6 @@
           },
           {
             "name": "protocolFeeRecipient",
-            "type": "publicKey"
-          },
-          {
-            "name": "oracleFeeRecipient",
             "type": "publicKey"
           },
           {

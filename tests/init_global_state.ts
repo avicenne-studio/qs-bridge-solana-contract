@@ -43,7 +43,6 @@ describe("initialize test", () => {
   it("should initialize global state", async () => {
     const [globalStatePda, globalStateBump] = await findGlobalStatePda();
     const protocolFeeRecipient = await generateKeyPairSigner();
-    const oracleFeeRecipient = await generateKeyPairSigner();
     const tokenMint = await generateKeyPairSigner();
 
     const [tokenMetadata] = await getProgramDerivedAddress({
@@ -59,7 +58,6 @@ describe("initialize test", () => {
       admin,
       globalState: globalStatePda,
       protocolFeeRecipient: protocolFeeRecipient.address,
-      oracleFeeRecipient: oracleFeeRecipient.address,
       tokenMint: tokenMint,
       systemProgram: SystemProgram.programId.toString() as Address,
       tokenMetadata,
@@ -116,7 +114,6 @@ describe("initialize test", () => {
       bpsFee: 100,
       protocolFeeBpsOfBps: 100,
       protocolFeeRecipient: protocolFeeRecipient.address,
-      oracleFeeRecipient: oracleFeeRecipient.address,
       tokenMint: tokenMint.address,
       bump: globalStateBump,
     });
