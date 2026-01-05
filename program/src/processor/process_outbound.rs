@@ -14,8 +14,9 @@ use solana_program::{
 use spl_token::instruction as token_instruction;
 
 use crate::{
-    constants::{QUBIC_CONTRACT_ADDRESS, QUBIC_NETWORK_ID, SEED_OUTBOUND_ORDER},
+    constants::{QUBIC_CONTRACT_ADDRESS, QUBIC_NETWORK_ID, SEED_OUTBOUND_ORDER, SOLANA_NETWORK_ID},
     error::QSBridgeError,
+    events::OutboundEvent,
     state::{global_state::GlobalState, outbound_order::OutboundOrder},
     utils::deserialize_and_validate_pda,
 };
@@ -26,7 +27,7 @@ pub struct OutboundOrderArgs {
     pub token_out: [u8; 32],
     pub to_address: [u8; 32],
     pub amount: u64,
-    pub relayer_fee: u128,
+    pub relayer_fee: u64,
     pub nonce: [u8; 32],
 }
 
@@ -158,7 +159,19 @@ pub fn process_outbound(
         ],
     )?;
 
-    let event_data = args.try_to_vec()?;
+    let outbound_event = OutboundEvent {
+        network_in: SOLANA_NETWORK_ID,
+        network_out: args.network_out,
+        token_in: global_state.token_mint.to_bytes(),
+        token_out: args.token_out,
+        from_address: user_ai.key.to_bytes(),
+        to_address: args.to_address,
+        amount: args.amount,
+        relayer_fee: args.relayer_fee,
+        nonce: args.nonce,
+    };
+
+    let event_data = outbound_event.try_to_vec()?;
     sol_log_data(&[&event_data]);
 
     Ok(())

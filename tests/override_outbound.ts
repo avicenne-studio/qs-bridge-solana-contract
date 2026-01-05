@@ -1,5 +1,6 @@
-import { AccountInfoBytes, LiteSVM } from "litesvm";
+import { LiteSVM } from "litesvm";
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
+import { getOverrideOutboundInstruction } from "../clients/js/instructions/overrideOutbound";
 import { getOutboundInstruction } from "../clients/js/instructions/outbound";
 import { getInitGlobalStateInstruction } from "../clients/js/instructions/initGlobalState";
 import { findGlobalStatePda } from "../clients/js/pdas/globalState";
@@ -23,12 +24,11 @@ import {
   AccountState,
   getMintDecoder,
   getMintEncoder,
-  getTokenDecoder,
   getTokenEncoder,
 } from "@solana-program/token";
 import { VersionedTransaction } from "@solana/web3.js";
 import {
-  getOutboundEventDecoder,
+  getOverrideOutboundEventDecoder,
   getOutboundOrderDecoder,
   Key,
   QS_BRIDGE_PROGRAM_ADDRESS,
@@ -45,7 +45,7 @@ const METADATA_PROGRAM_ADDRESS =
 const QUBIC_NETWORK_ID = 1;
 const QUBIC_CONTRACT_ADDRESS = new Uint8Array(32).fill(0);
 
-describe("outbound test", () => {
+describe("override outbound test", () => {
   const svm = new LiteSVM().withBlockhashCheck(false);
   let admin: KeyPairSigner;
   let user: KeyPairSigner;
@@ -54,6 +54,11 @@ describe("outbound test", () => {
   let globalStatePda: Address;
   let tokenMintPubkey: PublicKey;
   let mintAmount: bigint;
+  let outboundOrderPda: Address;
+  let outboundBump: number;
+  let originalToAddress: Uint8Array;
+  let originalRelayerFee: bigint;
+  let nonce: Uint8Array;
 
   beforeAll(async () => {
     admin = await generateKeyPairSigner();
@@ -82,7 +87,7 @@ describe("outbound test", () => {
       ],
     });
 
-    // Initialize global state using the init instruction (this also creates and initializes the mint)
+    // Initialize global state using the init instruction
     const initGlobalStateIx = getInitGlobalStateInstruction({
       admin,
       globalState: globalStatePda,
@@ -135,7 +140,7 @@ describe("outbound test", () => {
       closeAuthority: null,
     });
 
-    const tokenAccountToSet: AccountInfoBytes = {
+    const tokenAccountToSet = {
       executable: false,
       owner: new PublicKey(TOKEN_PROGRAM_ID),
       lamports: LAMPORTS_PER_SOL,
@@ -149,7 +154,7 @@ describe("outbound test", () => {
       supply: mintAmount,
     });
 
-    const mintAccountToSet: AccountInfoBytes = {
+    const mintAccountToSet = {
       executable: false,
       owner: new PublicKey(TOKEN_PROGRAM_ID),
       lamports: LAMPORTS_PER_SOL,
@@ -158,39 +163,16 @@ describe("outbound test", () => {
 
     svm.setAccount(new PublicKey(userTokenAccount), tokenAccountToSet);
     svm.setAccount(new PublicKey(tokenMint.address), mintAccountToSet);
-  });
 
-  it("should process outbound order and burn tokens", async () => {
-    const tokenAccountData = svm.getAccount(new PublicKey(userTokenAccount));
-    const decodedTokenAccount = getTokenDecoder().decode(
-      tokenAccountData!.data
-    );
-
-    assert.equal(decodedTokenAccount.amount, mintAmount);
-
-    // Verify tokens were minted by checking mint supply
-    const mintAccountAfterMint = svm.getAccount(tokenMintPubkey);
-    const decodedMintAfterMint = getMintDecoder().decode(
-      mintAccountAfterMint!.data
-    );
-    assert.equal(decodedMintAfterMint.supply, mintAmount);
-
-    // Also verify the token account exists
-    const userTokenAccountData = svm.getAccount(
-      new PublicKey(userTokenAccount)
-    );
-    assert.ok(userTokenAccountData, "User token account should exist");
-
-    // Prepare outbound order parameters
+    // Create an outbound order first
     const networkOut = QUBIC_NETWORK_ID;
     const tokenOut = QUBIC_CONTRACT_ADDRESS;
-    const toAddress = new Uint8Array(32).fill(1); // Example Qubic address
-    const amount = 500000000n; // 0.5 tokens
-    const relayerFee = 10000000n; // 0.01 tokens
-    const nonce = new Uint8Array(32).fill(42); // Example nonce
+    originalToAddress = new Uint8Array(32).fill(1);
+    const amount = 500000000n;
+    originalRelayerFee = 10000000n;
+    nonce = new Uint8Array(32).fill(42);
 
-    // Derive outbound order PDA
-    const [outboundOrderPda, outboundBump] = await getProgramDerivedAddress({
+    const [outboundPda, bump] = await getProgramDerivedAddress({
       programAddress: QS_BRIDGE_PROGRAM_ADDRESS,
       seeds: [
         getUtf8Encoder().encode("outbound_order"),
@@ -198,22 +180,22 @@ describe("outbound test", () => {
         getBytesEncoder().encode(nonce),
       ],
     });
+    outboundOrderPda = outboundPda;
+    outboundBump = bump;
 
-    // Create outbound instruction
     const outboundIx = getOutboundInstruction({
       user,
       globalState: globalStatePda,
       outboundOrder: outboundOrderPda,
       userTokenAccount: userTokenAccount as Address,
       tokenMint: tokenMint.address,
-      tokenProgram:
-        TOKEN_PROGRAM_ID as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">,
+      tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId.toString() as Address,
       networkOut,
       tokenOut,
-      toAddress,
+      toAddress: originalToAddress,
       amount,
-      relayerFee,
+      relayerFee: originalRelayerFee,
       nonce,
     });
 
@@ -229,89 +211,172 @@ describe("outbound test", () => {
     const versionedOutboundTx = VersionedTransaction.deserialize(
       new Uint8Array(encodedOutboundTx)
     );
+    svm.sendTransaction(versionedOutboundTx);
+  });
 
-    const res = svm.sendTransaction(versionedOutboundTx);
+  it("should override outbound order to_address and relayer_fee", async () => {
+    // Verify original order exists
+    const originalOrderAccount = svm.getAccount(
+      new PublicKey(outboundOrderPda)
+    );
+    assert.ok(originalOrderAccount, "Outbound order should exist");
+
+    const originalOrder = getOutboundOrderDecoder().decode(
+      originalOrderAccount!.data
+    );
+    assert.deepStrictEqual(
+      Array.from(originalOrder.toAddress),
+      Array.from(originalToAddress)
+    );
+    assert.strictEqual(originalOrder.relayerFee, originalRelayerFee);
+
+    // Prepare override parameters
+    const newToAddress = new Uint8Array(32).fill(2); // Different address
+    const newRelayerFee = 20000000n; // Different fee
+
+    // Create override instruction
+    const overrideIx = getOverrideOutboundInstruction({
+      caller: user,
+      globalState: globalStatePda,
+      outboundOrder: outboundOrderPda,
+      toAddress: newToAddress,
+      relayerFee: newRelayerFee,
+    });
+
+    const overrideTxMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx) => setTransactionMessageFeePayerSigner(user, tx),
+      (tx) => appendTransactionMessageInstruction(overrideIx, tx)
+    );
+
+    const signedOverrideTx =
+      await signTransactionMessageWithSigners(overrideTxMessage);
+    const encodedOverrideTx = getTransactionEncoder().encode(signedOverrideTx);
+    const versionedOverrideTx = VersionedTransaction.deserialize(
+      new Uint8Array(encodedOverrideTx)
+    );
+
+    const res = svm.sendTransaction(versionedOverrideTx);
     const logs = (res as any).logs() as string[];
 
     // Find and deserialize the event data from logs
-    // sol_log_data creates logs with format: "Program data: <base64>"
     const eventLog = logs.find((log) => log.startsWith("Program data:"));
     assert.ok(eventLog, "Event log should exist");
 
-    // Extract base64 data (everything after "Program data: ")
+    // Extract base64 data
     const base64Data = eventLog.split("Program data: ")[1];
     const eventBytes = new Uint8Array(Buffer.from(base64Data, "base64"));
 
-    const decodedEvent = getOutboundEventDecoder().decode(eventBytes);
+    const decodedEvent = getOverrideOutboundEventDecoder().decode(eventBytes);
 
-    assert.strictEqual(decodedEvent.networkIn, 2); // SOLANA_NETWORK_ID
-    assert.strictEqual(decodedEvent.networkOut, networkOut);
-    assert.deepStrictEqual(
-      Array.from(decodedEvent.tokenIn),
-      Array.from(tokenMintPubkey.toBytes())
-    );
-    assert.deepStrictEqual(
-      Array.from(decodedEvent.tokenOut),
-      Array.from(tokenOut)
-    );
-    assert.deepStrictEqual(
-      Array.from(decodedEvent.fromAddress),
-      Array.from(new PublicKey(user.address).toBytes())
-    );
+    // Verify event data matches updated values
     assert.deepStrictEqual(
       Array.from(decodedEvent.toAddress),
-      Array.from(toAddress)
+      Array.from(newToAddress)
     );
-    assert.strictEqual(decodedEvent.amount, amount);
-    assert.strictEqual(decodedEvent.relayerFee, relayerFee);
+    assert.strictEqual(decodedEvent.relayerFee, newRelayerFee);
     assert.deepStrictEqual(Array.from(decodedEvent.nonce), Array.from(nonce));
 
-    // Verify outbound order was created
-    const outboundOrderAccount = svm.getAccount(
-      new PublicKey(outboundOrderPda)
-    );
-    assert.ok(outboundOrderAccount, "Outbound order account should exist");
-
-    const decodedOutboundOrder = getOutboundOrderDecoder().decode(
-      outboundOrderAccount!.data
+    // Verify outbound order was updated
+    const updatedOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
+    const updatedOrder = getOutboundOrderDecoder().decode(
+      updatedOrderAccount!.data
     );
 
-    assert.strictEqual(decodedOutboundOrder.key, Key.OutboundOrder);
-    assert.strictEqual(decodedOutboundOrder.networkIn, 2); // SOLANA_NETWORK_ID
-    assert.strictEqual(decodedOutboundOrder.networkOut, networkOut);
+    assert.strictEqual(updatedOrder.key, Key.OutboundOrder);
     assert.deepStrictEqual(
-      Array.from(decodedOutboundOrder.tokenIn),
-      Array.from(tokenMintPubkey.toBytes())
+      Array.from(updatedOrder.toAddress),
+      Array.from(newToAddress),
+      "to_address should be updated"
     );
-    assert.deepStrictEqual(
-      Array.from(decodedOutboundOrder.tokenOut),
-      Array.from(tokenOut)
-    );
-    assert.deepStrictEqual(
-      Array.from(decodedOutboundOrder.fromAddress),
-      Array.from(new PublicKey(user.address).toBytes())
-    );
-    assert.deepStrictEqual(
-      Array.from(decodedOutboundOrder.toAddress),
-      Array.from(toAddress)
-    );
-    assert.strictEqual(decodedOutboundOrder.amount, amount);
-    assert.strictEqual(decodedOutboundOrder.relayerFee, relayerFee);
-    assert.deepStrictEqual(
-      Array.from(decodedOutboundOrder.nonce),
-      Array.from(nonce)
-    );
-    assert.strictEqual(decodedOutboundOrder.bump, outboundBump);
-
-    // Verify tokens were burned by checking mint supply decreased
-
-    // Verify mint supply decreased
-    const mintAccount = svm.getAccount(tokenMintPubkey);
-    const decodedMint = getMintDecoder().decode(mintAccount!.data);
     assert.strictEqual(
-      decodedMint.supply,
-      mintAmount - amount,
-      "Mint supply should decrease after burn"
+      updatedOrder.relayerFee,
+      newRelayerFee,
+      "relayer_fee should be updated"
+    );
+    assert.deepStrictEqual(Array.from(updatedOrder.nonce), Array.from(nonce));
+
+    // Verify other fields remain unchanged
+    assert.strictEqual(updatedOrder.amount, originalOrder.amount);
+    assert.deepStrictEqual(
+      Array.from(updatedOrder.fromAddress),
+      Array.from(originalOrder.fromAddress)
+    );
+  });
+
+  it("should override only to_address when relayer_fee is not provided", async () => {
+    // Reset to original values first
+    const resetToAddress = new Uint8Array(32).fill(3);
+    const resetIx = getOverrideOutboundInstruction({
+      caller: user,
+      globalState: globalStatePda,
+      outboundOrder: outboundOrderPda,
+      toAddress: resetToAddress,
+      relayerFee: null,
+    });
+
+    const resetTxMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx) => setTransactionMessageFeePayerSigner(user, tx),
+      (tx) => appendTransactionMessageInstruction(resetIx, tx)
+    );
+
+    const signedResetTx =
+      await signTransactionMessageWithSigners(resetTxMessage);
+    const encodedResetTx = getTransactionEncoder().encode(signedResetTx);
+    const versionedResetTx = VersionedTransaction.deserialize(
+      new Uint8Array(encodedResetTx)
+    );
+    svm.sendTransaction(versionedResetTx);
+
+    // Get the relayer_fee before override
+    const beforeOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
+    const beforeOrder = getOutboundOrderDecoder().decode(
+      beforeOrderAccount!.data
+    );
+    const beforeRelayerFee = beforeOrder.relayerFee;
+
+    // Override only to_address
+    const newToAddressOnly = new Uint8Array(32).fill(4);
+    const overrideOnlyToAddressIx = getOverrideOutboundInstruction({
+      caller: user,
+      globalState: globalStatePda,
+      outboundOrder: outboundOrderPda,
+      toAddress: newToAddressOnly,
+      relayerFee: null,
+    });
+
+    const overrideOnlyToAddressTxMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx) => setTransactionMessageFeePayerSigner(user, tx),
+      (tx) => appendTransactionMessageInstruction(overrideOnlyToAddressIx, tx)
+    );
+
+    const signedOverrideOnlyToAddressTx =
+      await signTransactionMessageWithSigners(overrideOnlyToAddressTxMessage);
+    const encodedOverrideOnlyToAddressTx = getTransactionEncoder().encode(
+      signedOverrideOnlyToAddressTx
+    );
+    const versionedOverrideOnlyToAddressTx = VersionedTransaction.deserialize(
+      new Uint8Array(encodedOverrideOnlyToAddressTx)
+    );
+    svm.sendTransaction(versionedOverrideOnlyToAddressTx);
+
+    // Verify only to_address was updated
+    const afterOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
+    const afterOrder = getOutboundOrderDecoder().decode(
+      afterOrderAccount!.data
+    );
+
+    assert.deepStrictEqual(
+      Array.from(afterOrder.toAddress),
+      Array.from(newToAddressOnly),
+      "to_address should be updated"
+    );
+    assert.strictEqual(
+      afterOrder.relayerFee,
+      beforeRelayerFee,
+      "relayer_fee should remain unchanged"
     );
   });
 });

@@ -15,6 +15,7 @@ import {
 import {
   type ParsedInitGlobalStateInstruction,
   type ParsedOutboundInstruction,
+  type ParsedOverrideOutboundInstruction,
 } from "../instructions";
 
 export const QS_BRIDGE_PROGRAM_ADDRESS =
@@ -31,6 +32,7 @@ export enum QsBridgeAccount {
 export enum QsBridgeInstruction {
   InitGlobalState,
   Outbound,
+  OverrideOutbound,
 }
 
 export function identifyQsBridgeInstruction(
@@ -42,6 +44,9 @@ export function identifyQsBridgeInstruction(
   }
   if (containsBytes(data, getU8Encoder().encode(1), 0)) {
     return QsBridgeInstruction.Outbound;
+  }
+  if (containsBytes(data, getU8Encoder().encode(2), 0)) {
+    return QsBridgeInstruction.OverrideOutbound;
   }
   throw new Error(
     "The provided instruction could not be identified as a qsBridge instruction.",
@@ -56,4 +61,7 @@ export type ParsedQsBridgeInstruction<
     } & ParsedInitGlobalStateInstruction<TProgram>)
   | ({
       instructionType: QsBridgeInstruction.Outbound;
-    } & ParsedOutboundInstruction<TProgram>);
+    } & ParsedOutboundInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.OverrideOutbound;
+    } & ParsedOverrideOutboundInstruction<TProgram>);

@@ -9,3 +9,5 @@
 export * from "./domain";
 export * from "./key";
 export * from "./orderData";
+export * from "./outboundEvent";
+export * from "./overrideOutboundEvent";

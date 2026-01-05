@@ -1,9 +1,9 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankInstruction;
 
-use crate::{
-    processor::process_init_global_state::InitGlobalStateArgs,
-    processor::process_outbound::OutboundOrderArgs,
+use crate::processor::{
+    process_init_global_state::InitGlobalStateArgs, process_outbound::OutboundOrderArgs,
+    process_override_outbound::OverrideOutboundArgs,
 };
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, ShankInstruction)]
@@ -26,4 +26,8 @@ pub enum QSBridgeInstruction {
     #[account(5, name = "Token Program", desc = "Token Program Account")]
     #[account(6, name = "System Program", desc = "System Program Account")]
     Outbound(OutboundOrderArgs),
+    #[account(0, writable, signer, name = "Caller", desc = "Caller who owns the order")]
+    #[account(1, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Outbound Order", desc = "Outbound Order PDA")]
+    OverrideOutbound(OverrideOutboundArgs),
 }

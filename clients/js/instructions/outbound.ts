@@ -14,8 +14,6 @@ import {
   getBytesEncoder,
   getStructDecoder,
   getStructEncoder,
-  getU128Decoder,
-  getU128Encoder,
   getU32Decoder,
   getU32Encoder,
   getU64Decoder,
@@ -115,7 +113,7 @@ export function getOutboundInstructionDataEncoder(): FixedSizeEncoder<OutboundIn
       ["tokenOut", fixEncoderSize(getBytesEncoder(), 32)],
       ["toAddress", fixEncoderSize(getBytesEncoder(), 32)],
       ["amount", getU64Encoder()],
-      ["relayerFee", getU128Encoder()],
+      ["relayerFee", getU64Encoder()],
       ["nonce", fixEncoderSize(getBytesEncoder(), 32)],
     ]),
     (value) => ({ ...value, discriminator: OUTBOUND_DISCRIMINATOR }),
@@ -129,7 +127,7 @@ export function getOutboundInstructionDataDecoder(): FixedSizeDecoder<OutboundIn
     ["tokenOut", fixDecoderSize(getBytesDecoder(), 32)],
     ["toAddress", fixDecoderSize(getBytesDecoder(), 32)],
     ["amount", getU64Decoder()],
-    ["relayerFee", getU128Decoder()],
+    ["relayerFee", getU64Decoder()],
     ["nonce", fixDecoderSize(getBytesDecoder(), 32)],
   ]);
 }
