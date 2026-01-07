@@ -4,6 +4,8 @@ module.exports = async function before() {
     constantPdaSeedNode,
     stringTypeNode,
     stringValueNode,
+    variablePdaSeedNode,
+    publicKeyTypeNode,
   } = require('@codama/nodes');
 
   return addPdasVisitor({
@@ -11,6 +13,10 @@ module.exports = async function before() {
       {
         name: 'globalState',
         seeds: [constantPdaSeedNode(stringTypeNode('utf8'), stringValueNode('global_state'))],
+      },
+            {
+        name: 'pauser',
+        seeds: [constantPdaSeedNode(stringTypeNode('utf8'), stringValueNode('pauser')), variablePdaSeedNode('pauser', publicKeyTypeNode())],
       },
     ],
   });

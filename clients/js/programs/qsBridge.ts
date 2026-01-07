@@ -13,9 +13,13 @@ import {
   type ReadonlyUint8Array,
 } from "@solana/kit";
 import {
+  type ParsedAddPauserInstruction,
   type ParsedInitGlobalStateInstruction,
   type ParsedOutboundInstruction,
   type ParsedOverrideOutboundInstruction,
+  type ParsedPauseInstruction,
+  type ParsedRemovePauserInstruction,
+  type ParsedUnpauseInstruction,
 } from "../instructions";
 
 export const QS_BRIDGE_PROGRAM_ADDRESS =
@@ -33,10 +37,14 @@ export enum QsBridgeInstruction {
   InitGlobalState,
   Outbound,
   OverrideOutbound,
+  AddPauser,
+  RemovePauser,
+  Pause,
+  Unpause,
 }
 
 export function identifyQsBridgeInstruction(
-  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array,
+  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array
 ): QsBridgeInstruction {
   const data = "data" in instruction ? instruction.data : instruction;
   if (containsBytes(data, getU8Encoder().encode(0), 0)) {
@@ -48,8 +56,20 @@ export function identifyQsBridgeInstruction(
   if (containsBytes(data, getU8Encoder().encode(2), 0)) {
     return QsBridgeInstruction.OverrideOutbound;
   }
+  if (containsBytes(data, getU8Encoder().encode(3), 0)) {
+    return QsBridgeInstruction.AddPauser;
+  }
+  if (containsBytes(data, getU8Encoder().encode(4), 0)) {
+    return QsBridgeInstruction.RemovePauser;
+  }
+  if (containsBytes(data, getU8Encoder().encode(5), 0)) {
+    return QsBridgeInstruction.Pause;
+  }
+  if (containsBytes(data, getU8Encoder().encode(6), 0)) {
+    return QsBridgeInstruction.Unpause;
+  }
   throw new Error(
-    "The provided instruction could not be identified as a qsBridge instruction.",
+    "The provided instruction could not be identified as a qsBridge instruction."
   );
 }
 
@@ -64,4 +84,16 @@ export type ParsedQsBridgeInstruction<
     } & ParsedOutboundInstruction<TProgram>)
   | ({
       instructionType: QsBridgeInstruction.OverrideOutbound;
-    } & ParsedOverrideOutboundInstruction<TProgram>);
+    } & ParsedOverrideOutboundInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.AddPauser;
+    } & ParsedAddPauserInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.RemovePauser;
+    } & ParsedRemovePauserInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.Pause;
+    } & ParsedPauseInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.Unpause;
+    } & ParsedUnpauseInstruction<TProgram>);

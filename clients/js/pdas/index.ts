@@ -7,3 +7,4 @@
  */
 
 export * from "./globalState";
+export * from "./pauser";

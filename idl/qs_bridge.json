@@ -196,6 +196,165 @@
         "type": "u8",
         "value": 2
       }
+    },
+    {
+      "name": "AddPauser",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "pauserPda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pauser PDA"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "addPauserArgs",
+          "type": {
+            "defined": "AddPauserArgs"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 3
+      }
+    },
+    {
+      "name": "RemovePauser",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "pauserPda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pauser PDA"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 4
+      }
+    },
+    {
+      "name": "Pause",
+      "accounts": [
+        {
+          "name": "pauser",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Pauser"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "pauserPda",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pauser PDA"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 5
+      }
+    },
+    {
+      "name": "Unpause",
+      "accounts": [
+        {
+          "name": "pauser",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Pauser"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "pauserPda",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pauser PDA"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 6
+      }
     }
   ],
   "accounts": [
@@ -500,6 +659,18 @@
                 32
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddPauserArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pauserPubkey",
+            "type": "publicKey"
           }
         ]
       }

@@ -6,6 +6,10 @@
  * @see https://github.com/codama-idl/codama
  */
 
+export * from "./addPauser";
 export * from "./initGlobalState";
 export * from "./outbound";
 export * from "./overrideOutbound";
+export * from "./pause";
+export * from "./removePauser";
+export * from "./unpause";
