@@ -13,11 +13,13 @@ import {
   type ReadonlyUint8Array,
 } from "@solana/kit";
 import {
+  type ParsedAddOracleInstruction,
   type ParsedAddPauserInstruction,
   type ParsedInitGlobalStateInstruction,
   type ParsedOutboundInstruction,
   type ParsedOverrideOutboundInstruction,
   type ParsedPauseInstruction,
+  type ParsedRemoveOracleInstruction,
   type ParsedRemovePauserInstruction,
   type ParsedUnpauseInstruction,
 } from "../instructions";
@@ -41,6 +43,8 @@ export enum QsBridgeInstruction {
   RemovePauser,
   Pause,
   Unpause,
+  AddOracle,
+  RemoveOracle,
 }
 
 export function identifyQsBridgeInstruction(
@@ -67,6 +71,12 @@ export function identifyQsBridgeInstruction(
   }
   if (containsBytes(data, getU8Encoder().encode(6), 0)) {
     return QsBridgeInstruction.Unpause;
+  }
+  if (containsBytes(data, getU8Encoder().encode(7), 0)) {
+    return QsBridgeInstruction.AddOracle;
+  }
+  if (containsBytes(data, getU8Encoder().encode(8), 0)) {
+    return QsBridgeInstruction.RemoveOracle;
   }
   throw new Error(
     "The provided instruction could not be identified as a qsBridge instruction."
@@ -96,4 +106,10 @@ export type ParsedQsBridgeInstruction<
     } & ParsedPauseInstruction<TProgram>)
   | ({
       instructionType: QsBridgeInstruction.Unpause;
-    } & ParsedUnpauseInstruction<TProgram>);
+    } & ParsedUnpauseInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.AddOracle;
+    } & ParsedAddOracleInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.RemoveOracle;
+    } & ParsedRemoveOracleInstruction<TProgram>);

@@ -2,8 +2,9 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankInstruction;
 
 use crate::processor::{
-    process_add_pauser::AddPauserArgs, process_init_global_state::InitGlobalStateArgs,
-    process_outbound::OutboundOrderArgs, process_override_outbound::OverrideOutboundArgs,
+    process_add_oracle::AddOracleArgs, process_add_pauser::AddPauserArgs,
+    process_init_global_state::InitGlobalStateArgs, process_outbound::OutboundOrderArgs,
+    process_override_outbound::OverrideOutboundArgs,
 };
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, ShankInstruction)]
@@ -48,4 +49,14 @@ pub enum QSBridgeInstruction {
     #[account(1, writable, name = "Global State", desc = "Global State")]
     #[account(2, name = "Pauser PDA", desc = "Pauser PDA")]
     Unpause,
+    #[account(0, writable, signer, name = "Admin", desc = "Admin")]
+    #[account(1, writable, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Oracle PDA", desc = "Oracle PDA")]
+    #[account(3, name = "System Program", desc = "System Program Account")]
+    AddOracle(AddOracleArgs),
+    #[account(0, writable, signer, name = "Admin", desc = "Admin")]
+    #[account(1, writable, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Oracle PDA", desc = "Oracle PDA")]
+    #[account(3, name = "System Program", desc = "System Program Account")]
+    RemoveOracle,
 }

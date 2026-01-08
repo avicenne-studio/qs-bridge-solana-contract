@@ -7,4 +7,5 @@
  */
 
 export * from "./globalState";
+export * from "./oracle";
 export * from "./pauser";

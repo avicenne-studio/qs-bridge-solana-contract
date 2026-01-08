@@ -10,6 +10,8 @@ pub enum QSBridgeError {
     UnsupportedNetwork,
     #[error("Unsupported out token")]
     UnsupportedOutToken,
+    #[error("Oracle has claimable balance")]
+    OracleHasClaimableBalance,
 }
 
 impl From<QSBridgeError> for ProgramError {

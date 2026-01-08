@@ -8,15 +8,17 @@ use crate::{constants::SEED_ORACLE, state::Key, traits::PdaSeeds};
 pub struct Oracle {
     pub key: Key,
     pub oracle_pubkey: Pubkey,
+    pub claimable_balance: u64,
     pub bump: u8,
 }
 
 impl Oracle {
-    pub const SPACE: usize = 1 + 32 + 1;
+    pub const SPACE: usize = 1 + 32 + 8 + 1;
     pub fn new(oracle_pubkey: Pubkey, bump: u8) -> Self {
         Self {
             key: Key::Oracle,
             oracle_pubkey,
+            claimable_balance: 0,
             bump,
         }
     }

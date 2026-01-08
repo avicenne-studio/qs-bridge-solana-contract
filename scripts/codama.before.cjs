@@ -1,18 +1,43 @@
 module.exports = async function before() {
-  const { addPdasVisitor } = require('@codama/visitors');
+  const { addPdasVisitor } = require("@codama/visitors");
   const {
     constantPdaSeedNode,
     stringTypeNode,
     stringValueNode,
     variablePdaSeedNode,
     publicKeyTypeNode,
-  } = require('@codama/nodes');
+  } = require("@codama/nodes");
 
   return addPdasVisitor({
     qs_bridge: [
       {
-        name: 'globalState',
-        seeds: [constantPdaSeedNode(stringTypeNode('utf8'), stringValueNode('global_state'))],
+        name: "globalState",
+        seeds: [
+          constantPdaSeedNode(
+            stringTypeNode("utf8"),
+            stringValueNode("global_state")
+          ),
+        ],
+      },
+      {
+        name: "pauser",
+        seeds: [
+          constantPdaSeedNode(
+            stringTypeNode("utf8"),
+            stringValueNode("pauser")
+          ),
+          variablePdaSeedNode("pauser", publicKeyTypeNode()),
+        ],
+      },
+      {
+        name: "oracle",
+        seeds: [
+          constantPdaSeedNode(
+            stringTypeNode("utf8"),
+            stringValueNode("oracle")
+          ),
+          variablePdaSeedNode("oracle", publicKeyTypeNode()),
+        ],
       },
             {
         name: 'pauser',
@@ -21,5 +46,3 @@ module.exports = async function before() {
     ],
   });
 };
-
-

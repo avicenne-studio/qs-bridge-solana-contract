@@ -355,6 +355,97 @@
         "type": "u8",
         "value": 6
       }
+    },
+    {
+      "name": "AddOracle",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "oraclePda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle PDA"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "addOracleArgs",
+          "type": {
+            "defined": "AddOracleArgs"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 7
+      }
+    },
+    {
+      "name": "RemoveOracle",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "oraclePda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle PDA"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 8
+      }
     }
   ],
   "accounts": [
@@ -659,6 +750,18 @@
                 32
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddOracleArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oraclePubkey",
+            "type": "publicKey"
           }
         ]
       }
