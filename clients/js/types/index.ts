@@ -7,6 +7,7 @@
  */
 
 export * from "./domain";
+export * from "./inboundEvent";
 export * from "./key";
 export * from "./orderData";
 export * from "./outboundEvent";

@@ -15,6 +15,7 @@ import {
 import {
   type ParsedAddOracleInstruction,
   type ParsedAddPauserInstruction,
+  type ParsedInboundInstruction,
   type ParsedInitGlobalStateInstruction,
   type ParsedOutboundInstruction,
   type ParsedOverrideOutboundInstruction,
@@ -45,10 +46,11 @@ export enum QsBridgeInstruction {
   Unpause,
   AddOracle,
   RemoveOracle,
+  Inbound,
 }
 
 export function identifyQsBridgeInstruction(
-  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array
+  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array,
 ): QsBridgeInstruction {
   const data = "data" in instruction ? instruction.data : instruction;
   if (containsBytes(data, getU8Encoder().encode(0), 0)) {
@@ -78,8 +80,11 @@ export function identifyQsBridgeInstruction(
   if (containsBytes(data, getU8Encoder().encode(8), 0)) {
     return QsBridgeInstruction.RemoveOracle;
   }
+  if (containsBytes(data, getU8Encoder().encode(9), 0)) {
+    return QsBridgeInstruction.Inbound;
+  }
   throw new Error(
-    "The provided instruction could not be identified as a qsBridge instruction."
+    "The provided instruction could not be identified as a qsBridge instruction.",
   );
 }
 
@@ -112,4 +117,7 @@ export type ParsedQsBridgeInstruction<
     } & ParsedAddOracleInstruction<TProgram>)
   | ({
       instructionType: QsBridgeInstruction.RemoveOracle;
-    } & ParsedRemoveOracleInstruction<TProgram>);
+    } & ParsedRemoveOracleInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.Inbound;
+    } & ParsedInboundInstruction<TProgram>);

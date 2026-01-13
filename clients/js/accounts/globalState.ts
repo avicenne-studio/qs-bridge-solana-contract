@@ -21,6 +21,8 @@ import {
   getStructEncoder,
   getU16Decoder,
   getU16Encoder,
+  getU64Decoder,
+  getU64Encoder,
   getU8Decoder,
   getU8Encoder,
   type Account,
@@ -41,6 +43,7 @@ export type GlobalState = {
   admin: Address;
   protocolFeeRecipient: Address;
   tokenMint: Address;
+  owedProtocolFee: bigint;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
@@ -54,6 +57,7 @@ export type GlobalStateArgs = {
   admin: Address;
   protocolFeeRecipient: Address;
   tokenMint: Address;
+  owedProtocolFee: number | bigint;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
@@ -69,6 +73,7 @@ export function getGlobalStateEncoder(): FixedSizeEncoder<GlobalStateArgs> {
     ["admin", getAddressEncoder()],
     ["protocolFeeRecipient", getAddressEncoder()],
     ["tokenMint", getAddressEncoder()],
+    ["owedProtocolFee", getU64Encoder()],
     ["bpsFee", getU16Encoder()],
     ["protocolFeeBpsOfBps", getU16Encoder()],
     ["paused", getBooleanEncoder()],
@@ -85,6 +90,7 @@ export function getGlobalStateDecoder(): FixedSizeDecoder<GlobalState> {
     ["admin", getAddressDecoder()],
     ["protocolFeeRecipient", getAddressDecoder()],
     ["tokenMint", getAddressDecoder()],
+    ["owedProtocolFee", getU64Decoder()],
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
     ["paused", getBooleanDecoder()],
@@ -156,5 +162,5 @@ export async function fetchAllMaybeGlobalState(
 }
 
 export function getGlobalStateSize(): number {
-  return 105;
+  return 113;
 }

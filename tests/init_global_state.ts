@@ -110,6 +110,7 @@ describe("initialize test", () => {
       admin: admin.address,
       paused: false,
       oracleThresholdPercent: 100,
+      owedProtocolFee: 0n,
       oracleCount: 0,
       bpsFee: 100,
       protocolFeeBpsOfBps: 100,

@@ -12,6 +12,8 @@ pub enum QSBridgeError {
     UnsupportedOutToken,
     #[error("Oracle has claimable balance")]
     OracleHasClaimableBalance,
+    #[error("Invalid number of signatures")]
+    InvalidNumberOfSignatures,
 }
 
 impl From<QSBridgeError> for ProgramError {

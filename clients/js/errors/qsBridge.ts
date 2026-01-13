@@ -20,8 +20,14 @@ export const QS_BRIDGE_ERROR__PROGRAM_PAUSED = 0x0; // 0
 export const QS_BRIDGE_ERROR__UNSUPPORTED_NETWORK = 0x1; // 1
 /** UnsupportedOutToken: Unsupported out token */
 export const QS_BRIDGE_ERROR__UNSUPPORTED_OUT_TOKEN = 0x2; // 2
+/** OracleHasClaimableBalance: Oracle has claimable balance */
+export const QS_BRIDGE_ERROR__ORACLE_HAS_CLAIMABLE_BALANCE = 0x3; // 3
+/** InvalidNumberOfSignatures: Invalid number of signatures */
+export const QS_BRIDGE_ERROR__INVALID_NUMBER_OF_SIGNATURES = 0x4; // 4
 
 export type QsBridgeError =
+  | typeof QS_BRIDGE_ERROR__INVALID_NUMBER_OF_SIGNATURES
+  | typeof QS_BRIDGE_ERROR__ORACLE_HAS_CLAIMABLE_BALANCE
   | typeof QS_BRIDGE_ERROR__PROGRAM_PAUSED
   | typeof QS_BRIDGE_ERROR__UNSUPPORTED_NETWORK
   | typeof QS_BRIDGE_ERROR__UNSUPPORTED_OUT_TOKEN;
@@ -29,6 +35,8 @@ export type QsBridgeError =
 let qsBridgeErrorMessages: Record<QsBridgeError, string> | undefined;
 if (process.env.NODE_ENV !== "production") {
   qsBridgeErrorMessages = {
+    [QS_BRIDGE_ERROR__INVALID_NUMBER_OF_SIGNATURES]: `Invalid number of signatures`,
+    [QS_BRIDGE_ERROR__ORACLE_HAS_CLAIMABLE_BALANCE]: `Oracle has claimable balance`,
     [QS_BRIDGE_ERROR__PROGRAM_PAUSED]: `Program is paused`,
     [QS_BRIDGE_ERROR__UNSUPPORTED_NETWORK]: `Unsupported network`,
     [QS_BRIDGE_ERROR__UNSUPPORTED_OUT_TOKEN]: `Unsupported out token`,

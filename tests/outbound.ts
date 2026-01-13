@@ -21,6 +21,7 @@ import {
 } from "@solana/kit";
 import {
   AccountState,
+  ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
   getMintDecoder,
   getMintEncoder,
   getTokenDecoder,
@@ -28,6 +29,7 @@ import {
 } from "@solana-program/token";
 import { VersionedTransaction } from "@solana/web3.js";
 import {
+  findOutboundOrderPda,
   getOutboundEventDecoder,
   getOutboundOrderDecoder,
   Key,
@@ -115,7 +117,7 @@ describe("outbound test", () => {
     mintAmount = 1000000000n;
 
     const [derivedUserTokenAccount] = await getProgramDerivedAddress({
-      programAddress: TOKEN_PROGRAM_ID,
+      programAddress: ASSOCIATED_TOKEN_PROGRAM_ADDRESS,
       seeds: [
         getAddressEncoder().encode(user.address),
         getAddressEncoder().encode(TOKEN_PROGRAM_ID),
@@ -189,14 +191,9 @@ describe("outbound test", () => {
     const relayerFee = 10000000n; // 0.01 tokens
     const nonce = new Uint8Array(32).fill(42); // Example nonce
 
-    // Derive outbound order PDA
-    const [outboundOrderPda, outboundBump] = await getProgramDerivedAddress({
-      programAddress: QS_BRIDGE_PROGRAM_ADDRESS,
-      seeds: [
-        getUtf8Encoder().encode("outbound_order"),
-        getU32Encoder().encode(networkOut),
-        getBytesEncoder().encode(nonce),
-      ],
+    const [outboundOrderPda, outboundBump] = await findOutboundOrderPda({
+      networkOut,
+      nonce,
     });
 
     // Create outbound instruction

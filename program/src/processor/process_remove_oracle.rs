@@ -7,6 +7,7 @@ use solana_program::{
 };
 
 use crate::{
+    error::QSBridgeError,
     state::{global_state::GlobalState, oracle::Oracle},
     utils::deserialize_and_validate_pda,
 };
@@ -33,7 +34,11 @@ pub fn process_remove_oracle(program_id: &Pubkey, accounts: &[AccountInfo]) -> P
         return Err(ProgramError::IncorrectAuthority);
     }
 
-    deserialize_and_validate_pda::<Oracle>(program_id, oracle_ai)?;
+    let oracle = deserialize_and_validate_pda::<Oracle>(program_id, oracle_ai)?;
+
+    if oracle.claimable_balance > 0 {
+        return Err(QSBridgeError::OracleHasClaimableBalance.into());
+    }
 
     global_state.oracle_count = global_state
         .oracle_count
