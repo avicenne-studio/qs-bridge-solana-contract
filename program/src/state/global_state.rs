@@ -14,18 +14,16 @@ pub struct GlobalState {
     pub bps_fee: u16,
     pub protocol_fee_bps_of_bps: u16,
     pub paused: bool,
-    pub oracle_threshold_percent: u8,
     pub oracle_count: u8,
     pub bump: u8,
 }
 
 impl GlobalState {
-    pub const SPACE: usize = 1 + 32 + 32 + 32 + 8 + 2 + 2 + 1 + 1 + 1 + 1;
+    pub const SPACE: usize = 1 + 32 + 32 + 32 + 8 + 2 + 2 + 1 + 1 + 1;
     pub fn new(
         admin: Pubkey,
         protocol_fee_recipient: Pubkey,
         token_mint: Pubkey,
-        oracle_threshold_percent: u8,
         bps_fee: u16,
         protocol_fee_bps_of_bps: u16,
         bump: u8,
@@ -38,7 +36,6 @@ impl GlobalState {
             admin,
             protocol_fee_recipient,
             token_mint,
-            oracle_threshold_percent,
             bps_fee,
             protocol_fee_bps_of_bps,
             bump,

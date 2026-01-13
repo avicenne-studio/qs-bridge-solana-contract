@@ -47,7 +47,6 @@ export type GlobalState = {
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
-  oracleThresholdPercent: number;
   oracleCount: number;
   bump: number;
 };
@@ -61,7 +60,6 @@ export type GlobalStateArgs = {
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
-  oracleThresholdPercent: number;
   oracleCount: number;
   bump: number;
 };
@@ -77,7 +75,6 @@ export function getGlobalStateEncoder(): FixedSizeEncoder<GlobalStateArgs> {
     ["bpsFee", getU16Encoder()],
     ["protocolFeeBpsOfBps", getU16Encoder()],
     ["paused", getBooleanEncoder()],
-    ["oracleThresholdPercent", getU8Encoder()],
     ["oracleCount", getU8Encoder()],
     ["bump", getU8Encoder()],
   ]);
@@ -94,7 +91,6 @@ export function getGlobalStateDecoder(): FixedSizeDecoder<GlobalState> {
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
     ["paused", getBooleanDecoder()],
-    ["oracleThresholdPercent", getU8Decoder()],
     ["oracleCount", getU8Decoder()],
     ["bump", getU8Decoder()],
   ]);
@@ -162,5 +158,5 @@ export async function fetchAllMaybeGlobalState(
 }
 
 export function getGlobalStateSize(): number {
-  return 113;
+  return 112;
 }

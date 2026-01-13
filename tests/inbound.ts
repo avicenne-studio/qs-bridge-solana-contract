@@ -210,7 +210,6 @@ describe("inbound test", () => {
       tokenMetadata,
       bpsFee: 100, // 1%
       protocolFeeBpsOfBps: 1000, // 10% of oracle fee
-      oracleThresholdPercent: 100,
       symbol: "Test",
       name: "test",
       uri: "https://arweave.net/QPC6FYdUn-3V8ytFNuoCS85S2tHAuiDblh6u3CIZLsw",

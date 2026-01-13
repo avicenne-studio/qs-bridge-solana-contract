@@ -22,7 +22,6 @@ use crate::{
 pub struct InitGlobalStateArgs {
     pub bps_fee: u16,
     pub protocol_fee_bps_of_bps: u16,
-    pub oracle_threshold_percent: u8,
     pub uri: String,
     pub name: String,
     pub symbol: String,
@@ -61,10 +60,6 @@ pub fn process_init_global_state(
 
     if !global_state_ai.data_is_empty() {
         return Err(ProgramError::AccountAlreadyInitialized);
-    }
-
-    if args.oracle_threshold_percent == 0 || args.oracle_threshold_percent > 100 {
-        return Err(ProgramError::InvalidArgument);
     }
 
     if args.bps_fee > 10_000 {
@@ -129,7 +124,6 @@ pub fn process_init_global_state(
         *payer_ai.key,
         *protocol_fee_recipient_ai.key,
         *token_mint_ai.key,
-        args.oracle_threshold_percent,
         args.bps_fee,
         args.protocol_fee_bps_of_bps,
         global_state_bump,

@@ -634,10 +634,6 @@
             "type": "bool"
           },
           {
-            "name": "oracleThresholdPercent",
-            "type": "u8"
-          },
-          {
             "name": "oracleCount",
             "type": "u8"
           },
@@ -1037,10 +1033,6 @@
           {
             "name": "protocolFeeBpsOfBps",
             "type": "u16"
-          },
-          {
-            "name": "oracleThresholdPercent",
-            "type": "u8"
           },
           {
             "name": "uri",
