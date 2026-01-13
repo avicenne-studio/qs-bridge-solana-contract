@@ -1,0 +1,10 @@
+{
+  "idl": "idl/qs_bridge.json",
+  "before": ["./scripts/codama.before.cjs"],
+  "scripts": {
+    "js": {
+      "from": "@codama/renderers-js",
+      "args": ["clients/js"]
+    }
+  }
+}

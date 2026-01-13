@@ -1,0 +1,21 @@
+[workspace]
+members = ["program"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+solana-program = "2.3.0"
+spl-associated-token-account = { version = "7.0.0", features = [
+    "no-entrypoint",
+] }
+mpl-token-metadata = "5.1.1"
+borsh = "0.10"
+borsh-derive = "0.10"
+shank = "0.0.12"
+spl-token = "8.0.0"
+num-derive = "0.4.2"
+thiserror = "2.0.17"
+num-traits = "0.2.19"
