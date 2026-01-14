@@ -6,6 +6,8 @@ module.exports = async function before() {
     stringValueNode,
     variablePdaSeedNode,
     publicKeyTypeNode,
+    bytesTypeNode,
+    numberTypeNode,
   } = require("@codama/nodes");
 
   return addPdasVisitor({
@@ -39,9 +41,27 @@ module.exports = async function before() {
           variablePdaSeedNode("oracle", publicKeyTypeNode()),
         ],
       },
-            {
-        name: 'pauser',
-        seeds: [constantPdaSeedNode(stringTypeNode('utf8'), stringValueNode('pauser')), variablePdaSeedNode('pauser', publicKeyTypeNode())],
+      {
+        name: "outboundOrder",
+        seeds: [
+          constantPdaSeedNode(
+            stringTypeNode("utf8"),
+            stringValueNode("outbound_order")
+          ),
+          variablePdaSeedNode("networkOut", numberTypeNode("u32")),
+          variablePdaSeedNode("nonce", bytesTypeNode()),
+        ],
+      },
+      {
+        name: "inboundOrder",
+        seeds: [
+          constantPdaSeedNode(
+            stringTypeNode("utf8"),
+            stringValueNode("inbound_order")
+          ),
+          variablePdaSeedNode("networkIn", numberTypeNode("u32")),
+          variablePdaSeedNode("nonce", bytesTypeNode()),
+        ],
       },
     ],
   });

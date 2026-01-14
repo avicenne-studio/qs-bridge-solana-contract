@@ -1,9 +1,12 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use shank::ShankAccount;
-use solana_program::hash::{hash, Hash};
+use solana_program::{
+    hash::{hash, Hash},
+    pubkey::Pubkey,
+};
 
 use crate::{
-    constants::{PROTOCOL_NAME, PROTOCOL_VERSION, QUBIC_CONTRACT_ADDRESS, SEED_INBOUND_ORDER},
+    constants::{PROTOCOL_NAME, PROTOCOL_VERSION, SEED_INBOUND_ORDER, SOLANA_NETWORK_ID},
     state::Key,
     traits::PdaSeeds,
 };
@@ -32,8 +35,8 @@ pub struct OrderData {
     pub token_out: [u8; 32],
     pub from_address: [u8; 32],
     pub to_address: [u8; 32],
-    pub amount: u128,
-    pub relayer_fee: u128,
+    pub amount: u64,
+    pub relayer_fee: u64,
     pub nonce: [u8; 32],
 }
 
@@ -48,22 +51,24 @@ impl InboundOrder {
         }
     }
 
-    pub fn get_inbound_order_message_hash(order: &OrderData, bps_fee: u16) -> Hash {
+    pub fn get_inbound_order_message_hash(
+        order: &OrderData,
+        token_mint: &Pubkey,
+        program_id: &Pubkey,
+    ) -> Hash {
         // - PROTOCOL_NAME ("QubicBridge"): 4 + 11 = 15 bytes
         // - PROTOCOL_VERSION ("1"): 4 + 1 = 5 bytes
-        // - network_out (u32): 4 bytes
-        // - QUBIC_CONTRACT_ADDRESS ([u8; 32]): 32 bytes
+        // - SOLANA_CONTRACT_ADDRESS ([u8; 32]): 32 bytes
         // - network_in (u32): 4 bytes
-        // - network_out (u32): 4 bytes (duplicate)
+        // - network_out (u32): 4 bytes
         // - token_in ([u8; 32]): 32 bytes
         // - token_out ([u8; 32]): 32 bytes
         // - from_address ([u8; 32]): 32 bytes
         // - to_address ([u8; 32]): 32 bytes
         // - amount (u128): 16 bytes
         // - relayer_fee (u128): 16 bytes
-        // - bps_fee (u16): 2 bytes
         // - nonce ([u8; 32]): 32 bytes
-        // Total: 258 bytes, using 300 for headroom
+        // Total: 252 bytes, using 300 for headroom
         let mut data = Vec::with_capacity(300);
 
         PROTOCOL_NAME
@@ -74,27 +79,22 @@ impl InboundOrder {
             .to_string()
             .serialize(&mut data)
             .expect("Protocol version serialization failed");
-        order
-            .network_out
-            .serialize(&mut data)
-            .expect("Network out serialization failed");
-        QUBIC_CONTRACT_ADDRESS
+        program_id
             .serialize(&mut data)
             .expect("Contract address serialization failed");
         order
             .network_in
             .serialize(&mut data)
             .expect("Network in serialization failed");
-        order
-            .network_out
+        SOLANA_NETWORK_ID
             .serialize(&mut data)
             .expect("Network out serialization failed");
         order
             .token_in
             .serialize(&mut data)
             .expect("Token in serialization failed");
-        order
-            .token_out
+        token_mint
+            .to_bytes()
             .serialize(&mut data)
             .expect("Token out serialization failed");
         order
@@ -113,9 +113,6 @@ impl InboundOrder {
             .relayer_fee
             .serialize(&mut data)
             .expect("Relayer fee serialization failed");
-        bps_fee
-            .serialize(&mut data)
-            .expect("BPS fee serialization failed");
         order
             .nonce
             .serialize(&mut data)

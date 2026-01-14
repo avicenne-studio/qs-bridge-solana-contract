@@ -7,5 +7,7 @@
  */
 
 export * from "./globalState";
+export * from "./inboundOrder";
 export * from "./oracle";
+export * from "./outboundOrder";
 export * from "./pauser";

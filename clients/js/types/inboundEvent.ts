@@ -24,7 +24,7 @@ import {
   type ReadonlyUint8Array,
 } from "@solana/kit";
 
-export type OrderData = {
+export type InboundEvent = {
   networkIn: number;
   networkOut: number;
   tokenIn: ReadonlyUint8Array;
@@ -36,7 +36,7 @@ export type OrderData = {
   nonce: ReadonlyUint8Array;
 };
 
-export type OrderDataArgs = {
+export type InboundEventArgs = {
   networkIn: number;
   networkOut: number;
   tokenIn: ReadonlyUint8Array;
@@ -48,7 +48,7 @@ export type OrderDataArgs = {
   nonce: ReadonlyUint8Array;
 };
 
-export function getOrderDataEncoder(): FixedSizeEncoder<OrderDataArgs> {
+export function getInboundEventEncoder(): FixedSizeEncoder<InboundEventArgs> {
   return getStructEncoder([
     ["networkIn", getU32Encoder()],
     ["networkOut", getU32Encoder()],
@@ -62,7 +62,7 @@ export function getOrderDataEncoder(): FixedSizeEncoder<OrderDataArgs> {
   ]);
 }
 
-export function getOrderDataDecoder(): FixedSizeDecoder<OrderData> {
+export function getInboundEventDecoder(): FixedSizeDecoder<InboundEvent> {
   return getStructDecoder([
     ["networkIn", getU32Decoder()],
     ["networkOut", getU32Decoder()],
@@ -76,6 +76,9 @@ export function getOrderDataDecoder(): FixedSizeDecoder<OrderData> {
   ]);
 }
 
-export function getOrderDataCodec(): FixedSizeCodec<OrderDataArgs, OrderData> {
-  return combineCodec(getOrderDataEncoder(), getOrderDataDecoder());
+export function getInboundEventCodec(): FixedSizeCodec<
+  InboundEventArgs,
+  InboundEvent
+> {
+  return combineCodec(getInboundEventEncoder(), getInboundEventDecoder());
 }

@@ -97,7 +97,6 @@ export type InitGlobalStateInstructionData = {
   discriminator: number;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
-  oracleThresholdPercent: number;
   uri: string;
   name: string;
   symbol: string;
@@ -106,7 +105,6 @@ export type InitGlobalStateInstructionData = {
 export type InitGlobalStateInstructionDataArgs = {
   bpsFee: number;
   protocolFeeBpsOfBps: number;
-  oracleThresholdPercent: number;
   uri: string;
   name: string;
   symbol: string;
@@ -118,7 +116,6 @@ export function getInitGlobalStateInstructionDataEncoder(): Encoder<InitGlobalSt
       ["discriminator", getU8Encoder()],
       ["bpsFee", getU16Encoder()],
       ["protocolFeeBpsOfBps", getU16Encoder()],
-      ["oracleThresholdPercent", getU8Encoder()],
       ["uri", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
       ["name", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
       ["symbol", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
@@ -132,7 +129,6 @@ export function getInitGlobalStateInstructionDataDecoder(): Decoder<InitGlobalSt
     ["discriminator", getU8Decoder()],
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
-    ["oracleThresholdPercent", getU8Decoder()],
     ["uri", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
     ["name", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
     ["symbol", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
@@ -177,7 +173,6 @@ export type InitGlobalStateInput<
   tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
   bpsFee: InitGlobalStateInstructionDataArgs["bpsFee"];
   protocolFeeBpsOfBps: InitGlobalStateInstructionDataArgs["protocolFeeBpsOfBps"];
-  oracleThresholdPercent: InitGlobalStateInstructionDataArgs["oracleThresholdPercent"];
   uri: InitGlobalStateInstructionDataArgs["uri"];
   name: InitGlobalStateInstructionDataArgs["name"];
   symbol: InitGlobalStateInstructionDataArgs["symbol"];

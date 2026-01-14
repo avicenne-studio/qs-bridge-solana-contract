@@ -8,6 +8,7 @@
 
 export * from "./addOracle";
 export * from "./addPauser";
+export * from "./inbound";
 export * from "./initGlobalState";
 export * from "./outbound";
 export * from "./overrideOutbound";

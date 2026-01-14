@@ -21,6 +21,8 @@ import {
   getStructEncoder,
   getU16Decoder,
   getU16Encoder,
+  getU64Decoder,
+  getU64Encoder,
   getU8Decoder,
   getU8Encoder,
   type Account,
@@ -41,10 +43,10 @@ export type GlobalState = {
   admin: Address;
   protocolFeeRecipient: Address;
   tokenMint: Address;
+  owedProtocolFee: bigint;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
-  oracleThresholdPercent: number;
   oracleCount: number;
   bump: number;
 };
@@ -54,10 +56,10 @@ export type GlobalStateArgs = {
   admin: Address;
   protocolFeeRecipient: Address;
   tokenMint: Address;
+  owedProtocolFee: number | bigint;
   bpsFee: number;
   protocolFeeBpsOfBps: number;
   paused: boolean;
-  oracleThresholdPercent: number;
   oracleCount: number;
   bump: number;
 };
@@ -69,10 +71,10 @@ export function getGlobalStateEncoder(): FixedSizeEncoder<GlobalStateArgs> {
     ["admin", getAddressEncoder()],
     ["protocolFeeRecipient", getAddressEncoder()],
     ["tokenMint", getAddressEncoder()],
+    ["owedProtocolFee", getU64Encoder()],
     ["bpsFee", getU16Encoder()],
     ["protocolFeeBpsOfBps", getU16Encoder()],
     ["paused", getBooleanEncoder()],
-    ["oracleThresholdPercent", getU8Encoder()],
     ["oracleCount", getU8Encoder()],
     ["bump", getU8Encoder()],
   ]);
@@ -85,10 +87,10 @@ export function getGlobalStateDecoder(): FixedSizeDecoder<GlobalState> {
     ["admin", getAddressDecoder()],
     ["protocolFeeRecipient", getAddressDecoder()],
     ["tokenMint", getAddressDecoder()],
+    ["owedProtocolFee", getU64Decoder()],
     ["bpsFee", getU16Decoder()],
     ["protocolFeeBpsOfBps", getU16Decoder()],
     ["paused", getBooleanDecoder()],
-    ["oracleThresholdPercent", getU8Decoder()],
     ["oracleCount", getU8Decoder()],
     ["bump", getU8Decoder()],
   ]);
@@ -156,5 +158,5 @@ export async function fetchAllMaybeGlobalState(
 }
 
 export function getGlobalStateSize(): number {
-  return 105;
+  return 112;
 }

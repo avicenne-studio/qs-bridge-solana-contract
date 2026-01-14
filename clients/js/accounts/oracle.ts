@@ -17,6 +17,8 @@ import {
   getAddressEncoder,
   getStructDecoder,
   getStructEncoder,
+  getU64Decoder,
+  getU64Encoder,
   getU8Decoder,
   getU8Encoder,
   type Account,
@@ -32,15 +34,26 @@ import {
 } from "@solana/kit";
 import { getKeyDecoder, getKeyEncoder, type Key, type KeyArgs } from "../types";
 
-export type Oracle = { key: Key; oraclePubkey: Address; bump: number };
+export type Oracle = {
+  key: Key;
+  oraclePubkey: Address;
+  claimableBalance: bigint;
+  bump: number;
+};
 
-export type OracleArgs = { key: KeyArgs; oraclePubkey: Address; bump: number };
+export type OracleArgs = {
+  key: KeyArgs;
+  oraclePubkey: Address;
+  claimableBalance: number | bigint;
+  bump: number;
+};
 
 /** Gets the encoder for {@link OracleArgs} account data. */
 export function getOracleEncoder(): FixedSizeEncoder<OracleArgs> {
   return getStructEncoder([
     ["key", getKeyEncoder()],
     ["oraclePubkey", getAddressEncoder()],
+    ["claimableBalance", getU64Encoder()],
     ["bump", getU8Encoder()],
   ]);
 }
@@ -50,6 +63,7 @@ export function getOracleDecoder(): FixedSizeDecoder<Oracle> {
   return getStructDecoder([
     ["key", getKeyDecoder()],
     ["oraclePubkey", getAddressDecoder()],
+    ["claimableBalance", getU64Decoder()],
     ["bump", getU8Decoder()],
   ]);
 }
@@ -113,5 +127,5 @@ export async function fetchAllMaybeOracle(
 }
 
 export function getOracleSize(): number {
-  return 34;
+  return 42;
 }

@@ -446,6 +446,151 @@
         "type": "u8",
         "value": 8
       }
+    },
+    {
+      "name": "Inbound",
+      "accounts": [
+        {
+          "name": "relayer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Relayer"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Token Mint"
+          ]
+        },
+        {
+          "name": "recipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Recipient"
+          ]
+        },
+        {
+          "name": "recipientAta",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Recipient Associated Token Account"
+          ]
+        },
+        {
+          "name": "relayerAta",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Relayer Associated Token Account"
+          ]
+        },
+        {
+          "name": "inboundOrderPda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "InboundOrder PDA"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Program Account"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Associated Token Program Account"
+          ]
+        },
+        {
+          "name": "oracle1Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 1 PDA"
+          ]
+        },
+        {
+          "name": "oracle2Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 2 PDA"
+          ]
+        },
+        {
+          "name": "oracle3Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 3 PDA"
+          ]
+        },
+        {
+          "name": "oracle4Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 4 PDA"
+          ]
+        },
+        {
+          "name": "oracle5Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 5 PDA"
+          ]
+        },
+        {
+          "name": "oracle6Pda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle 6 PDA"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "inboundArgs",
+          "type": {
+            "defined": "InboundArgs"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 9
+      }
     }
   ],
   "accounts": [
@@ -473,6 +618,10 @@
             "type": "publicKey"
           },
           {
+            "name": "owedProtocolFee",
+            "type": "u64"
+          },
+          {
             "name": "bpsFee",
             "type": "u16"
           },
@@ -483,10 +632,6 @@
           {
             "name": "paused",
             "type": "bool"
-          },
-          {
-            "name": "oracleThresholdPercent",
-            "type": "u8"
           },
           {
             "name": "oracleCount",
@@ -544,6 +689,10 @@
           {
             "name": "oraclePubkey",
             "type": "publicKey"
+          },
+          {
+            "name": "claimableBalance",
+            "type": "u64"
           },
           {
             "name": "bump",
@@ -655,6 +804,75 @@
     }
   ],
   "types": [
+    {
+      "name": "InboundEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "networkIn",
+            "type": "u32"
+          },
+          {
+            "name": "networkOut",
+            "type": "u32"
+          },
+          {
+            "name": "tokenIn",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "tokenOut",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "fromAddress",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "toAddress",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "relayerFee",
+            "type": "u64"
+          },
+          {
+            "name": "nonce",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
     {
       "name": "OutboundEvent",
       "type": {
@@ -779,6 +997,31 @@
       }
     },
     {
+      "name": "InboundArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "order",
+            "type": {
+              "defined": "OrderData"
+            }
+          },
+          {
+            "name": "signatures",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  64
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "InitGlobalStateArgs",
       "type": {
         "kind": "struct",
@@ -790,10 +1033,6 @@
           {
             "name": "protocolFeeBpsOfBps",
             "type": "u16"
-          },
-          {
-            "name": "oracleThresholdPercent",
-            "type": "u8"
           },
           {
             "name": "uri",
@@ -962,11 +1201,11 @@
           },
           {
             "name": "amount",
-            "type": "u128"
+            "type": "u64"
           },
           {
             "name": "relayerFee",
-            "type": "u128"
+            "type": "u64"
           },
           {
             "name": "nonce",
@@ -1019,6 +1258,16 @@
       "code": 2,
       "name": "UnsupportedOutToken",
       "msg": "Unsupported out token"
+    },
+    {
+      "code": 3,
+      "name": "OracleHasClaimableBalance",
+      "msg": "Oracle has claimable balance"
+    },
+    {
+      "code": 4,
+      "name": "InvalidNumberOfSignatures",
+      "msg": "Invalid number of signatures"
     }
   ],
   "metadata": {
