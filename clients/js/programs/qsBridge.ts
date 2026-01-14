@@ -15,6 +15,7 @@ import {
 import {
   type ParsedAddOracleInstruction,
   type ParsedAddPauserInstruction,
+  type ParsedClaimProtocolFeeInstruction,
   type ParsedInboundInstruction,
   type ParsedInitGlobalStateInstruction,
   type ParsedOutboundInstruction,
@@ -47,6 +48,7 @@ export enum QsBridgeInstruction {
   AddOracle,
   RemoveOracle,
   Inbound,
+  ClaimProtocolFee,
 }
 
 export function identifyQsBridgeInstruction(
@@ -82,6 +84,9 @@ export function identifyQsBridgeInstruction(
   }
   if (containsBytes(data, getU8Encoder().encode(9), 0)) {
     return QsBridgeInstruction.Inbound;
+  }
+  if (containsBytes(data, getU8Encoder().encode(10), 0)) {
+    return QsBridgeInstruction.ClaimProtocolFee;
   }
   throw new Error(
     "The provided instruction could not be identified as a qsBridge instruction.",
@@ -120,4 +125,7 @@ export type ParsedQsBridgeInstruction<
     } & ParsedRemoveOracleInstruction<TProgram>)
   | ({
       instructionType: QsBridgeInstruction.Inbound;
-    } & ParsedInboundInstruction<TProgram>);
+    } & ParsedInboundInstruction<TProgram>)
+  | ({
+      instructionType: QsBridgeInstruction.ClaimProtocolFee;
+    } & ParsedClaimProtocolFeeInstruction<TProgram>);

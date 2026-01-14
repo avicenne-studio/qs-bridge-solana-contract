@@ -591,6 +591,72 @@
         "type": "u8",
         "value": 9
       }
+    },
+    {
+      "name": "ClaimProtocolFee",
+      "accounts": [
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Protocol Fee Recipient"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Token Mint"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipientAta",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Protocol Fee Recipient Associated Token Account"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Program Account"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Associated Token Program Account"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 10
+      }
     }
   ],
   "accounts": [
