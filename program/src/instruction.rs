@@ -76,4 +76,22 @@ pub enum QSBridgeInstruction {
     #[account(14, writable, name = "Oracle 5 PDA", desc = "Oracle 5 PDA")]
     #[account(15, writable, name = "Oracle 6 PDA", desc = "Oracle 6 PDA")]
     Inbound(InboundArgs),
+    #[account(0, writable, signer, name = "Protocol Fee Recipient", desc = "Protocol Fee Recipient")]
+    #[account(1, writable, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Token Mint", desc = "Token Mint")]
+    #[account(3, writable, name = "Protocol Fee Recipient ATA", desc = "Protocol Fee Recipient Associated Token Account")]
+    #[account(4, name = "Token Program", desc = "Token Program Account")]
+    #[account(5, name = "Associated Token Program", desc = "Associated Token Program Account")]
+    #[account(6, name = "System Program", desc = "System Program Account")]
+    ClaimProtocolFee,
+    #[account(0, writable, signer, name = "Claimer", desc = "Claimer (Admin or Oracle User)")]
+    #[account(1, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Oracle PDA", desc = "Oracle PDA")]
+    #[account(3, name = "Oracle Owner", desc = "Oracle Owner")]
+    #[account(4, writable, name = "Token Mint", desc = "Token Mint")]
+    #[account(5, writable, name = "Oracle ATA", desc = "Oracle Associated Token Account")]
+    #[account(6, name = "Token Program", desc = "Token Program Account")]
+    #[account(7, name = "Associated Token Program", desc = "Associated Token Program Account")]
+    #[account(8, name = "System Program", desc = "System Program Account")]
+    ClaimOracleFee,
 }
