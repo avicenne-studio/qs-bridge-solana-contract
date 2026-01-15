@@ -46,6 +46,3 @@ npm run test
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and guidelines.
 
-## License
-
-ISC
