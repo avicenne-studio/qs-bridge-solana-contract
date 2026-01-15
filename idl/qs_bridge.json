@@ -657,6 +657,88 @@
         "type": "u8",
         "value": 10
       }
+    },
+    {
+      "name": "ClaimOracleFee",
+      "accounts": [
+        {
+          "name": "claimer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Claimer (Admin or Oracle User)"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        },
+        {
+          "name": "oraclePda",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle PDA"
+          ]
+        },
+        {
+          "name": "oracleOwner",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Oracle Owner"
+          ]
+        },
+        {
+          "name": "tokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Token Mint"
+          ]
+        },
+        {
+          "name": "oracleAta",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Oracle Associated Token Account"
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token Program Account"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Associated Token Program Account"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System Program Account"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 11
+      }
     }
   ],
   "accounts": [

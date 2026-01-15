@@ -84,4 +84,14 @@ pub enum QSBridgeInstruction {
     #[account(5, name = "Associated Token Program", desc = "Associated Token Program Account")]
     #[account(6, name = "System Program", desc = "System Program Account")]
     ClaimProtocolFee,
+    #[account(0, writable, signer, name = "Claimer", desc = "Claimer (Admin or Oracle User)")]
+    #[account(1, name = "Global State", desc = "Global State")]
+    #[account(2, writable, name = "Oracle PDA", desc = "Oracle PDA")]
+    #[account(3, name = "Oracle Owner", desc = "Oracle Owner")]
+    #[account(4, writable, name = "Token Mint", desc = "Token Mint")]
+    #[account(5, writable, name = "Oracle ATA", desc = "Oracle Associated Token Account")]
+    #[account(6, name = "Token Program", desc = "Token Program Account")]
+    #[account(7, name = "Associated Token Program", desc = "Associated Token Program Account")]
+    #[account(8, name = "System Program", desc = "System Program Account")]
+    ClaimOracleFee,
 }

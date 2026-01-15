@@ -8,6 +8,7 @@
 
 export * from "./addOracle";
 export * from "./addPauser";
+export * from "./claimOracleFee";
 export * from "./claimProtocolFee";
 export * from "./inbound";
 export * from "./initGlobalState";
