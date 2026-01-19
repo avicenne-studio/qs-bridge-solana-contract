@@ -2,6 +2,10 @@
 
 A Solana smart contract for cross-chain bridging functionality.
 
+## Governance
+
+This project is open source and maintained by Avicenne as part of the Qubic incubation program.
+
 ## Features
 
 - **Inbound/Outbound Orders** - Process cross-chain transfers in both directions

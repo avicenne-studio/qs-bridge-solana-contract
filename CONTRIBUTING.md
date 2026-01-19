@@ -1,69 +1,45 @@
-# Contributing to qs-bridge
+## Contributing
 
-## Overview
+This contribution guide is temporary and may evolve to match Qubic requirements
+once v1 of the protocol Bridge is deployed.
 
-qs-bridge is a Solana smart contract for cross-chain bridging functionality. The project uses Rust for the on-chain program and TypeScript for testing and client integration.
+### Before You Open a PR
+- Open an issue and discuss the change before sending a pull request.
+- Use a non-main branch for ongoing work.
+- Attempt to follow the prevailing code style and patterns in the repo.
 
-## Project Structure
+### Pull Request Requirements
+- Every PR must include unit tests and achieve 100% code coverage.
+- All integrated CI services must be green before a PR can be merged.
+- At least one representative of Avicenne must approve the PR before merging.
+- If consensus cannot be reached, Avicenne makes the final decision.
 
-```
-├── program/src/      # Rust smart contract
-│   ├── instruction.rs
-│   ├── processor/    # Instruction handlers
-│   ├── state/        # Account structures
-│   └── error.rs
-├── clients/js/       # Auto-generated TypeScript client (DO NOT EDIT)
-├── tests/            # Integration tests
-└── scripts/          # Build and code generation scripts
-```
+### Git Hygiene
+- No `--force` pushes on `main`.
+- Do not modify Git history in any way after a PR has been merged.
 
-## Prerequisites
+### Developer's Certificate of Origin 1.1
 
-- Rust (with `cargo build-sbf` support)
-- Node.js
-- Solana CLI tools
+By making a contribution to this project, I certify that:
 
-## Setup
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
 
-```bash
-npm install
-cargo build-sbf
-```
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
 
-## Development Workflow
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
 
-1. **Smart contract changes** - Edit files in `program/src/`
-2. **Regenerate clients** - Run `npm run idl:all` after modifying instructions
-3. **Write tests** - Add TypeScript tests in `tests/`
-4. **Run tests** - Execute `npm run test`
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm run test` | Build program and run all tests |
-| `npm run idl:shank` | Generate IDL from Rust code |
-| `npm run idl:codama` | Generate TypeScript client from IDL |
-| `npm run idl:all` | Generate IDL and TypeScript client |
-
-## Important Notes
-
-- **Do not edit `clients/js/`** - This directory is auto-generated from the IDL
-- Tests use LiteSVM for local Solana simulation
-- Target the `develop` branch for pull requests
-
-## Testing
-
-Tests are written in TypeScript using Jest and LiteSVM:
-
-```bash
-npm run test
-```
-
-## Pull Requests
-
-1. Create a feature branch from `develop`
-2. Make your changes
-3. Run `npm run idl:all` if you modified instructions
-4. Ensure all tests pass with `npm run test`
-5. Submit a PR to `develop`
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
