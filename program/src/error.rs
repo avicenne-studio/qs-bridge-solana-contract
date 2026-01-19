@@ -14,6 +14,10 @@ pub enum QSBridgeError {
     OracleHasClaimableBalance,
     #[error("Invalid number of signatures")]
     InvalidNumberOfSignatures,
+    #[error("Duplicate oracle signature detected")]
+    DuplicateOracleSignature,
+    #[error("Invalid relayer fee")]
+    InvalidRelayerFee,
 }
 
 impl From<QSBridgeError> for ProgramError {
