@@ -80,6 +80,24 @@ pub fn process_outbound(
         return Err(QSBridgeError::UnsupportedOutToken.into());
     }
 
+    let oracle_fee = (args.amount as u128)
+        .checked_mul(global_state.bps_fee.into())
+        .and_then(|v| v.checked_div(10_000))
+        .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+
+    let protocol_fee = (oracle_fee as u128)
+        .checked_mul(global_state.protocol_fee_bps_of_bps.into())
+        .and_then(|v| v.checked_div(10_000))
+        .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+
+    let total_fee = oracle_fee
+        .checked_add(protocol_fee)
+        .and_then(|v| v.checked_add(args.relayer_fee))
+        .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+    if total_fee >= args.amount {
+        return Err(QSBridgeError::InvalidRelayerFee.into());
+    }
+
     if !outbound_order_ai.data_is_empty() {
         return Err(ProgramError::AccountAlreadyInitialized);
     }

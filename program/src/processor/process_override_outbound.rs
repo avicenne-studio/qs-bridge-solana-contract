@@ -51,11 +51,30 @@ pub fn process_override_outbound(
         return Err(ProgramError::IncorrectAuthority);
     }
 
+    let oracle_fee = (outbound_order.amount as u128)
+        .checked_mul(global_state.bps_fee.into())
+        .and_then(|v| v.checked_div(10_000))
+        .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+
+    let protocol_fee = (oracle_fee as u128)
+        .checked_mul(global_state.protocol_fee_bps_of_bps.into())
+        .and_then(|v| v.checked_div(10_000))
+        .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+
     if let Some(new_to_address) = args.to_address {
         outbound_order.to_address = new_to_address;
     }
 
     if let Some(new_relayer_fee) = args.relayer_fee {
+        let total_fee = oracle_fee
+            .checked_add(protocol_fee)
+            .and_then(|v| v.checked_add(new_relayer_fee))
+            .ok_or(ProgramError::ArithmeticOverflow)? as u64;
+
+        if total_fee >= outbound_order.amount {
+            return Err(QSBridgeError::InvalidRelayerFee.into());
+        }
+
         outbound_order.relayer_fee = new_relayer_fee;
     }
 

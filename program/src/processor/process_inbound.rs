@@ -154,9 +154,11 @@ pub fn process_inbound(
         sig_verify(&public_key_bytes, signature, message_bytes)
             .map_err(|_| ProgramError::InvalidArgument)?;
 
-        if !valid_oracle_pubkeys.contains(&oracle.oracle_pubkey) {
-            valid_oracle_pubkeys.push(oracle.oracle_pubkey);
+        if valid_oracle_pubkeys.contains(&oracle.oracle_pubkey) {
+            return Err(QSBridgeError::DuplicateOracleSignature.into());
         }
+
+        valid_oracle_pubkeys.push(oracle.oracle_pubkey);
 
         if oracle_fee > 0 {
             let mut oracle_data = oracle_ai.try_borrow_mut_data()?;
