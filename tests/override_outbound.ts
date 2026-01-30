@@ -105,13 +105,13 @@ describe("override outbound test", () => {
     const txMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(admin, tx),
-      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx)
+      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx),
     );
 
     const signedTx = await signTransactionMessageWithSigners(txMessage);
     const encodedTx = getTransactionEncoder().encode(signedTx);
     const versionedTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedTx)
+      new Uint8Array(encodedTx),
     );
     svm.sendTransaction(versionedTx);
 
@@ -201,14 +201,14 @@ describe("override outbound test", () => {
     const outboundTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(user, tx),
-      (tx) => appendTransactionMessageInstruction(outboundIx, tx)
+      (tx) => appendTransactionMessageInstruction(outboundIx, tx),
     );
 
     const signedOutboundTx =
       await signTransactionMessageWithSigners(outboundTxMessage);
     const encodedOutboundTx = getTransactionEncoder().encode(signedOutboundTx);
     const versionedOutboundTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedOutboundTx)
+      new Uint8Array(encodedOutboundTx),
     );
     svm.sendTransaction(versionedOutboundTx);
   });
@@ -216,16 +216,16 @@ describe("override outbound test", () => {
   it("should override outbound order to_address and relayer_fee", async () => {
     // Verify original order exists
     const originalOrderAccount = svm.getAccount(
-      new PublicKey(outboundOrderPda)
+      new PublicKey(outboundOrderPda),
     );
     assert.ok(originalOrderAccount, "Outbound order should exist");
 
     const originalOrder = getOutboundOrderDecoder().decode(
-      originalOrderAccount!.data
+      originalOrderAccount!.data,
     );
     assert.deepStrictEqual(
       Array.from(originalOrder.toAddress),
-      Array.from(originalToAddress)
+      Array.from(originalToAddress),
     );
     assert.strictEqual(originalOrder.relayerFee, originalRelayerFee);
 
@@ -245,14 +245,14 @@ describe("override outbound test", () => {
     const overrideTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(user, tx),
-      (tx) => appendTransactionMessageInstruction(overrideIx, tx)
+      (tx) => appendTransactionMessageInstruction(overrideIx, tx),
     );
 
     const signedOverrideTx =
       await signTransactionMessageWithSigners(overrideTxMessage);
     const encodedOverrideTx = getTransactionEncoder().encode(signedOverrideTx);
     const versionedOverrideTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedOverrideTx)
+      new Uint8Array(encodedOverrideTx),
     );
 
     const res = svm.sendTransaction(versionedOverrideTx);
@@ -269,9 +269,10 @@ describe("override outbound test", () => {
     const decodedEvent = getOverrideOutboundEventDecoder().decode(eventBytes);
 
     // Verify event data matches updated values
+    assert.strictEqual(decodedEvent.discriminator, 2);
     assert.deepStrictEqual(
       Array.from(decodedEvent.toAddress),
-      Array.from(newToAddress)
+      Array.from(newToAddress),
     );
     assert.strictEqual(decodedEvent.relayerFee, newRelayerFee);
     assert.deepStrictEqual(Array.from(decodedEvent.nonce), Array.from(nonce));
@@ -279,19 +280,19 @@ describe("override outbound test", () => {
     // Verify outbound order was updated
     const updatedOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
     const updatedOrder = getOutboundOrderDecoder().decode(
-      updatedOrderAccount!.data
+      updatedOrderAccount!.data,
     );
 
     assert.strictEqual(updatedOrder.key, Key.OutboundOrder);
     assert.deepStrictEqual(
       Array.from(updatedOrder.toAddress),
       Array.from(newToAddress),
-      "to_address should be updated"
+      "to_address should be updated",
     );
     assert.strictEqual(
       updatedOrder.relayerFee,
       newRelayerFee,
-      "relayer_fee should be updated"
+      "relayer_fee should be updated",
     );
     assert.deepStrictEqual(Array.from(updatedOrder.nonce), Array.from(nonce));
 
@@ -299,7 +300,7 @@ describe("override outbound test", () => {
     assert.strictEqual(updatedOrder.amount, originalOrder.amount);
     assert.deepStrictEqual(
       Array.from(updatedOrder.fromAddress),
-      Array.from(originalOrder.fromAddress)
+      Array.from(originalOrder.fromAddress),
     );
   });
 
@@ -317,21 +318,21 @@ describe("override outbound test", () => {
     const resetTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(user, tx),
-      (tx) => appendTransactionMessageInstruction(resetIx, tx)
+      (tx) => appendTransactionMessageInstruction(resetIx, tx),
     );
 
     const signedResetTx =
       await signTransactionMessageWithSigners(resetTxMessage);
     const encodedResetTx = getTransactionEncoder().encode(signedResetTx);
     const versionedResetTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedResetTx)
+      new Uint8Array(encodedResetTx),
     );
     svm.sendTransaction(versionedResetTx);
 
     // Get the relayer_fee before override
     const beforeOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
     const beforeOrder = getOutboundOrderDecoder().decode(
-      beforeOrderAccount!.data
+      beforeOrderAccount!.data,
     );
     const beforeRelayerFee = beforeOrder.relayerFee;
 
@@ -348,34 +349,34 @@ describe("override outbound test", () => {
     const overrideOnlyToAddressTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(user, tx),
-      (tx) => appendTransactionMessageInstruction(overrideOnlyToAddressIx, tx)
+      (tx) => appendTransactionMessageInstruction(overrideOnlyToAddressIx, tx),
     );
 
     const signedOverrideOnlyToAddressTx =
       await signTransactionMessageWithSigners(overrideOnlyToAddressTxMessage);
     const encodedOverrideOnlyToAddressTx = getTransactionEncoder().encode(
-      signedOverrideOnlyToAddressTx
+      signedOverrideOnlyToAddressTx,
     );
     const versionedOverrideOnlyToAddressTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedOverrideOnlyToAddressTx)
+      new Uint8Array(encodedOverrideOnlyToAddressTx),
     );
     svm.sendTransaction(versionedOverrideOnlyToAddressTx);
 
     // Verify only to_address was updated
     const afterOrderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
     const afterOrder = getOutboundOrderDecoder().decode(
-      afterOrderAccount!.data
+      afterOrderAccount!.data,
     );
 
     assert.deepStrictEqual(
       Array.from(afterOrder.toAddress),
       Array.from(newToAddressOnly),
-      "to_address should be updated"
+      "to_address should be updated",
     );
     assert.strictEqual(
       afterOrder.relayerFee,
       beforeRelayerFee,
-      "relayer_fee should remain unchanged"
+      "relayer_fee should remain unchanged",
     );
   });
 });

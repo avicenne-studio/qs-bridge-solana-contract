@@ -958,6 +958,10 @@
         "kind": "struct",
         "fields": [
           {
+            "name": "discriminator",
+            "type": "u8"
+          },
+          {
             "name": "networkIn",
             "type": "u32"
           },
@@ -1027,6 +1031,10 @@
         "kind": "struct",
         "fields": [
           {
+            "name": "discriminator",
+            "type": "u8"
+          },
+          {
             "name": "networkIn",
             "type": "u32"
           },
@@ -1095,6 +1103,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "discriminator",
+            "type": "u8"
+          },
           {
             "name": "toAddress",
             "type": {
@@ -1416,6 +1428,16 @@
       "code": 4,
       "name": "InvalidNumberOfSignatures",
       "msg": "Invalid number of signatures"
+    },
+    {
+      "code": 5,
+      "name": "DuplicateOracleSignature",
+      "msg": "Duplicate oracle signature detected"
+    },
+    {
+      "code": 6,
+      "name": "InvalidRelayerFee",
+      "msg": "Invalid relayer fee"
     }
   ],
   "metadata": {

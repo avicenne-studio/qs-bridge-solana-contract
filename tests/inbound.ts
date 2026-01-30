@@ -99,7 +99,7 @@ function computeInboundOrderMessageHash(order: {
   // PROTOCOL_VERSION - Borsh string encoding: u32 length + bytes
   const protocolVersionBytes = new TextEncoder().encode(PROTOCOL_VERSION);
   data.push(
-    new Uint8Array(getU32Encoder().encode(protocolVersionBytes.length))
+    new Uint8Array(getU32Encoder().encode(protocolVersionBytes.length)),
   );
   data.push(new Uint8Array(protocolVersionBytes));
 
@@ -218,13 +218,13 @@ describe("inbound test", () => {
     const txMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(admin, tx),
-      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx)
+      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx),
     );
 
     const signedTx = await signTransactionMessageWithSigners(txMessage);
     const encodedTx = getTransactionEncoder().encode(signedTx);
     const versionedTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedTx)
+      new Uint8Array(encodedTx),
     );
     svm.sendTransaction(versionedTx);
 
@@ -259,21 +259,21 @@ describe("inbound test", () => {
           oraclePda: oraclePda,
           systemProgram: SystemProgram.programId.toString() as Address,
           oraclePubkey: oracle.address,
-        })
+        }),
       );
     }
 
     const oraclesTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(admin, tx),
-      (tx) => appendTransactionMessageInstructions(instructions, tx)
+      (tx) => appendTransactionMessageInstructions(instructions, tx),
     );
 
     const signedOraclesTx =
       await signTransactionMessageWithSigners(oraclesTxMessage);
     const encodedOraclesTx = getTransactionEncoder().encode(signedOraclesTx);
     const versionedOraclesTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedOraclesTx)
+      new Uint8Array(encodedOraclesTx),
     );
     svm.sendTransaction(versionedOraclesTx);
 
@@ -305,13 +305,13 @@ describe("inbound test", () => {
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(admin, tx),
       (tx) => appendTransactionMessageInstruction(createLookupTableIx, tx),
-      (tx) => appendTransactionMessageInstruction(extendLookupTableIx, tx)
+      (tx) => appendTransactionMessageInstruction(extendLookupTableIx, tx),
     );
 
     const signedLutTx = await signTransactionMessageWithSigners(lutTxMessage);
     const encodedLutTx = getTransactionEncoder().encode(signedLutTx);
     const versionedLutTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedLutTx)
+      new Uint8Array(encodedLutTx),
     );
     svm.sendTransaction(versionedLutTx);
   });
@@ -343,7 +343,7 @@ describe("inbound test", () => {
     const globalStateAccount = svm.getAccount(new PublicKey(globalStatePda));
     assert.ok(globalStateAccount, "Global state should exist");
     const globalState = getGlobalStateDecoder().decode(
-      new Uint8Array(globalStateAccount!.data)
+      new Uint8Array(globalStateAccount!.data),
     );
 
     // Compute message hash
@@ -388,7 +388,7 @@ describe("inbound test", () => {
           oracle: oracle.address,
         });
         return oraclePda;
-      })
+      }),
     );
 
     // Create process inbound instruction
@@ -430,15 +430,15 @@ describe("inbound test", () => {
       (tx) =>
         appendTransactionMessageInstruction(
           getSetComputeUnitLimitInstruction({ units: 300_000 }),
-          tx
+          tx,
         ),
       (tx) =>
         appendTransactionMessageInstruction(
           getSetComputeUnitPriceInstruction({ microLamports: 1000 }),
-          tx
+          tx,
         ),
 
-      (tx) => appendTransactionMessageInstruction(processInboundIx, tx)
+      (tx) => appendTransactionMessageInstruction(processInboundIx, tx),
     );
     const compressedTransactionMessage =
       // avoid lite svm lut bug, should work on devnet and mainnet
@@ -453,13 +453,13 @@ describe("inbound test", () => {
         // ],
       });
     const signedTx = await signTransactionMessageWithSigners(
-      compressedTransactionMessage
+      compressedTransactionMessage,
     );
 
     // assertIsTransactionWithinSizeLimit(signedTx);
     const encodedTx = getTransactionEncoder().encode(signedTx);
     const versionedTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedTx)
+      new Uint8Array(encodedTx),
     );
 
     const res = svm.sendTransaction(versionedTx);
@@ -472,6 +472,7 @@ describe("inbound test", () => {
     const eventBytes = new Uint8Array(Buffer.from(base64Data, "base64"));
     const decodedEvent = getInboundEventDecoder().decode(eventBytes);
 
+    assert.strictEqual(decodedEvent.discriminator, 0);
     assert.strictEqual(decodedEvent.networkIn, QUBIC_NETWORK_ID);
     assert.strictEqual(decodedEvent.networkOut, SOLANA_NETWORK_ID);
     assert.strictEqual(decodedEvent.amount, amount);
@@ -482,13 +483,13 @@ describe("inbound test", () => {
     assert.ok(inboundOrderAccount, "Inbound order account should exist");
 
     const decodedInboundOrder = getInboundOrderDecoder().decode(
-      new Uint8Array(inboundOrderAccount!.data)
+      new Uint8Array(inboundOrderAccount!.data),
     );
     assert.strictEqual(decodedInboundOrder.key, Key.InboundOrder);
     assert.strictEqual(decodedInboundOrder.networkIn, QUBIC_NETWORK_ID);
     assert.deepStrictEqual(
       Array.from(decodedInboundOrder.nonce),
-      Array.from(nonce)
+      Array.from(nonce),
     );
 
     // Verify fees were calculated correctly
@@ -503,28 +504,28 @@ describe("inbound test", () => {
 
     // Verify protocol fee was added to global state
     const updatedGlobalStateAccount = svm.getAccount(
-      new PublicKey(globalStatePda)
+      new PublicKey(globalStatePda),
     );
     assert.ok(updatedGlobalStateAccount, "Updated global state should exist");
     const updatedGlobalState = getGlobalStateDecoder().decode(
-      new Uint8Array(updatedGlobalStateAccount!.data)
+      new Uint8Array(updatedGlobalStateAccount!.data),
     );
     assert.strictEqual(
       updatedGlobalState.owedProtocolFee,
       expectedProtocolFee,
-      "Protocol fee should be added to global state"
+      "Protocol fee should be added to global state",
     );
 
     // Verify oracle balances were updated
     const updatedOracle1Account = svm.getAccount(new PublicKey(oraclePdas[0]));
     assert.ok(updatedOracle1Account, "Oracle 1 account should exist");
     const updatedOracle1 = getOracleDecoder().decode(
-      new Uint8Array(updatedOracle1Account!.data)
+      new Uint8Array(updatedOracle1Account!.data),
     );
     // 60% need to sign
     const numRequiredSignatures = Math.min(
       Math.ceil(updatedGlobalState.oracleCount * 0.6),
-      6
+      6,
     );
 
     const expectedOracleBalance =
@@ -532,49 +533,49 @@ describe("inbound test", () => {
     assert.strictEqual(
       updatedOracle1.claimableBalance,
       expectedOracleBalance,
-      "Oracle 1 balance should be updated"
+      "Oracle 1 balance should be updated",
     );
 
     // Verify tokens were minted
     const recipientTokenAccountAfter = svm.getAccount(
-      new PublicKey(recipientAta)
+      new PublicKey(recipientAta),
     );
     assert.ok(
       recipientTokenAccountAfter,
-      "Recipient token account should exist"
+      "Recipient token account should exist",
     );
     const recipientTokenState = getTokenDecoder().decode(
-      recipientTokenAccountAfter!.data
+      recipientTokenAccountAfter!.data,
     );
 
     assert.strictEqual(
       recipientTokenState.amount,
       expectedRemaining,
-      "Recipient should receive remaining amount"
+      "Recipient should receive remaining amount",
     );
 
     const relayerTokenAccountAfter = svm.getAccount(new PublicKey(relayerAta));
     assert.ok(relayerTokenAccountAfter, "Relayer token account should exist");
     const relayerTokenState = getTokenDecoder().decode(
-      new Uint8Array(relayerTokenAccountAfter!.data)
+      new Uint8Array(relayerTokenAccountAfter!.data),
     );
     assert.strictEqual(
       relayerTokenState.amount,
       relayerFee,
-      "Relayer should receive relayer fee"
+      "Relayer should receive relayer fee",
     );
 
     // Verify mint supply increased
     const mintAccountAfter = svm.getAccount(new PublicKey(tokenMint.address));
     assert.ok(mintAccountAfter, "Mint account should exist");
     const mintState = getMintDecoder().decode(
-      new Uint8Array(mintAccountAfter!.data)
+      new Uint8Array(mintAccountAfter!.data),
     );
     const expectedTotalMinted = expectedRemaining + relayerFee;
     assert.strictEqual(
       mintState.supply,
       expectedTotalMinted,
-      "Mint supply should increase by remaining + relayer fee"
+      "Mint supply should increase by remaining + relayer fee",
     );
   });
 });

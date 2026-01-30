@@ -102,13 +102,13 @@ describe("outbound test", () => {
     const txMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(admin, tx),
-      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx)
+      (tx) => appendTransactionMessageInstruction(initGlobalStateIx, tx),
     );
 
     const signedTx = await signTransactionMessageWithSigners(txMessage);
     const encodedTx = getTransactionEncoder().encode(signedTx);
     const versionedTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedTx)
+      new Uint8Array(encodedTx),
     );
     svm.sendTransaction(versionedTx);
 
@@ -164,7 +164,7 @@ describe("outbound test", () => {
   it("should process outbound order and burn tokens", async () => {
     const tokenAccountData = svm.getAccount(new PublicKey(userTokenAccount));
     const decodedTokenAccount = getTokenDecoder().decode(
-      tokenAccountData!.data
+      tokenAccountData!.data,
     );
 
     assert.equal(decodedTokenAccount.amount, mintAmount);
@@ -172,13 +172,13 @@ describe("outbound test", () => {
     // Verify tokens were minted by checking mint supply
     const mintAccountAfterMint = svm.getAccount(tokenMintPubkey);
     const decodedMintAfterMint = getMintDecoder().decode(
-      mintAccountAfterMint!.data
+      mintAccountAfterMint!.data,
     );
     assert.equal(decodedMintAfterMint.supply, mintAmount);
 
     // Also verify the token account exists
     const userTokenAccountData = svm.getAccount(
-      new PublicKey(userTokenAccount)
+      new PublicKey(userTokenAccount),
     );
     assert.ok(userTokenAccountData, "User token account should exist");
 
@@ -216,14 +216,14 @@ describe("outbound test", () => {
     const outboundTxMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(user, tx),
-      (tx) => appendTransactionMessageInstruction(outboundIx, tx)
+      (tx) => appendTransactionMessageInstruction(outboundIx, tx),
     );
 
     const signedOutboundTx =
       await signTransactionMessageWithSigners(outboundTxMessage);
     const encodedOutboundTx = getTransactionEncoder().encode(signedOutboundTx);
     const versionedOutboundTx = VersionedTransaction.deserialize(
-      new Uint8Array(encodedOutboundTx)
+      new Uint8Array(encodedOutboundTx),
     );
 
     const res = svm.sendTransaction(versionedOutboundTx);
@@ -240,23 +240,24 @@ describe("outbound test", () => {
 
     const decodedEvent = getOutboundEventDecoder().decode(eventBytes);
 
+    assert.strictEqual(decodedEvent.discriminator, 1);
     assert.strictEqual(decodedEvent.networkIn, 2); // SOLANA_NETWORK_ID
     assert.strictEqual(decodedEvent.networkOut, networkOut);
     assert.deepStrictEqual(
       Array.from(decodedEvent.tokenIn),
-      Array.from(tokenMintPubkey.toBytes())
+      Array.from(tokenMintPubkey.toBytes()),
     );
     assert.deepStrictEqual(
       Array.from(decodedEvent.tokenOut),
-      Array.from(tokenOut)
+      Array.from(tokenOut),
     );
     assert.deepStrictEqual(
       Array.from(decodedEvent.fromAddress),
-      Array.from(new PublicKey(user.address).toBytes())
+      Array.from(new PublicKey(user.address).toBytes()),
     );
     assert.deepStrictEqual(
       Array.from(decodedEvent.toAddress),
-      Array.from(toAddress)
+      Array.from(toAddress),
     );
     assert.strictEqual(decodedEvent.amount, amount);
     assert.strictEqual(decodedEvent.relayerFee, relayerFee);
@@ -264,12 +265,12 @@ describe("outbound test", () => {
 
     // Verify outbound order was created
     const outboundOrderAccount = svm.getAccount(
-      new PublicKey(outboundOrderPda)
+      new PublicKey(outboundOrderPda),
     );
     assert.ok(outboundOrderAccount, "Outbound order account should exist");
 
     const decodedOutboundOrder = getOutboundOrderDecoder().decode(
-      outboundOrderAccount!.data
+      outboundOrderAccount!.data,
     );
 
     assert.strictEqual(decodedOutboundOrder.key, Key.OutboundOrder);
@@ -277,25 +278,25 @@ describe("outbound test", () => {
     assert.strictEqual(decodedOutboundOrder.networkOut, networkOut);
     assert.deepStrictEqual(
       Array.from(decodedOutboundOrder.tokenIn),
-      Array.from(tokenMintPubkey.toBytes())
+      Array.from(tokenMintPubkey.toBytes()),
     );
     assert.deepStrictEqual(
       Array.from(decodedOutboundOrder.tokenOut),
-      Array.from(tokenOut)
+      Array.from(tokenOut),
     );
     assert.deepStrictEqual(
       Array.from(decodedOutboundOrder.fromAddress),
-      Array.from(new PublicKey(user.address).toBytes())
+      Array.from(new PublicKey(user.address).toBytes()),
     );
     assert.deepStrictEqual(
       Array.from(decodedOutboundOrder.toAddress),
-      Array.from(toAddress)
+      Array.from(toAddress),
     );
     assert.strictEqual(decodedOutboundOrder.amount, amount);
     assert.strictEqual(decodedOutboundOrder.relayerFee, relayerFee);
     assert.deepStrictEqual(
       Array.from(decodedOutboundOrder.nonce),
-      Array.from(nonce)
+      Array.from(nonce),
     );
     assert.strictEqual(decodedOutboundOrder.bump, outboundBump);
 
@@ -307,7 +308,7 @@ describe("outbound test", () => {
     assert.strictEqual(
       decodedMint.supply,
       mintAmount - amount,
-      "Mint supply should decrease after burn"
+      "Mint supply should decrease after burn",
     );
   });
 });
