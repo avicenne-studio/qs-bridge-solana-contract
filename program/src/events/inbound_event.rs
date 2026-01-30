@@ -3,6 +3,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 /// Event emitted when tokens are minted in an inbound order
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct InboundEvent {
+    pub discriminator: u8,
     pub network_in: u32,
     pub network_out: u32,
     pub token_in: [u8; 32],

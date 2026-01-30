@@ -82,6 +82,7 @@ pub fn process_override_outbound(
     outbound_order.serialize(&mut &mut data[..])?;
 
     let override_event = OverrideOutboundEvent {
+        discriminator: 2,
         to_address: outbound_order.to_address,
         relayer_fee: outbound_order.relayer_fee,
         nonce: outbound_order.nonce,

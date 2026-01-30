@@ -178,6 +178,7 @@ pub fn process_outbound(
     )?;
 
     let outbound_event = OutboundEvent {
+        discriminator: 1,
         network_in: SOLANA_NETWORK_ID,
         network_out: args.network_out,
         token_in: global_state.token_mint.to_bytes(),

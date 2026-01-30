@@ -305,6 +305,7 @@ pub fn process_inbound(
     inbound_order.serialize(&mut &mut data[..])?;
 
     let inbound_event = InboundEvent {
+        discriminator: 0,
         network_in: args.order.network_in,
         network_out: args.order.network_out,
         token_in: args.order.token_in,
