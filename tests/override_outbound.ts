@@ -196,6 +196,7 @@ describe("override outbound test", () => {
       amount,
       relayerFee: originalRelayerFee,
       nonce,
+      orderEra: 0,
     });
 
     const outboundTxMessage = pipe(

@@ -209,6 +209,7 @@ describe("claim protocol fee test", () => {
       amount,
       relayerFee,
       nonce: new Uint8Array(nonce),
+      orderEra: 0,
     };
 
     // Compute message hash and get oracle signatures
@@ -297,6 +298,7 @@ describe("claim protocol fee test", () => {
         amount: order.amount,
         relayerFee: order.relayerFee,
         nonce: order.nonce,
+        orderEra: order.orderEra,
       },
       signatures: signatures.map((sig) => new Uint8Array(sig)),
     });
@@ -421,6 +423,7 @@ function computeInboundOrderMessageHash(order: {
   amount: bigint;
   relayerFee: bigint;
   nonce: Uint8Array;
+  orderEra: number;
 }): Uint8Array {
   const data: Uint8Array[] = [];
   // PROTOCOL_NAME - Borsh string encoding: u32 length + bytes
@@ -464,6 +467,9 @@ function computeInboundOrderMessageHash(order: {
 
   // nonce
   data.push(new Uint8Array(getBytesEncoder().encode(order.nonce)));
+
+  // order_era
+  data.push(new Uint8Array(getU32Encoder().encode(order.orderEra)));
 
   // Concatenate all data
   const totalLength = data.reduce((sum, arr) => sum + arr.length, 0);
