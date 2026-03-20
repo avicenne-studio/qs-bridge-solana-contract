@@ -19,11 +19,12 @@ pub struct OutboundOrder {
     pub amount: u64,
     pub relayer_fee: u64,
     pub nonce: [u8; 32],
+    pub order_era: u32,
     pub bump: u8,
 }
 
 impl OutboundOrder {
-    pub const SPACE: usize = 1 + 4 + 4 + 32 + 32 + 32 + 32 + 8 + 8 + 32 + 1;
+    pub const SPACE: usize = 1 + 4 + 4 + 32 + 32 + 32 + 32 + 8 + 8 + 32 + 4 + 1;
 
     pub fn new(
         network_out: u32,
@@ -34,6 +35,7 @@ impl OutboundOrder {
         amount: u64,
         relayer_fee: u64,
         nonce: [u8; 32],
+        order_era: u32,
         bump: u8,
     ) -> Self {
         Self {
@@ -47,6 +49,7 @@ impl OutboundOrder {
             amount,
             relayer_fee,
             nonce,
+            order_era,
             bump,
         }
     }

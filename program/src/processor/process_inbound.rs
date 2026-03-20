@@ -315,6 +315,7 @@ pub fn process_inbound(
         amount: args.order.amount,
         relayer_fee: args.order.relayer_fee,
         nonce: args.order.nonce,
+        order_era: args.order.order_era,
     };
 
     let event_data = inbound_event.try_to_vec()?;

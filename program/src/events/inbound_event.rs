@@ -13,4 +13,5 @@ pub struct InboundEvent {
     pub amount: u64,
     pub relayer_fee: u64,
     pub nonce: [u8; 32],
+    pub order_era: u32,
 }
