@@ -38,6 +38,7 @@ pub struct OrderData {
     pub amount: u64,
     pub relayer_fee: u64,
     pub nonce: [u8; 32],
+    pub order_era: u32,
 }
 
 impl InboundOrder {
@@ -65,10 +66,11 @@ impl InboundOrder {
         // - token_out ([u8; 32]): 32 bytes
         // - from_address ([u8; 32]): 32 bytes
         // - to_address ([u8; 32]): 32 bytes
-        // - amount (u128): 16 bytes
-        // - relayer_fee (u128): 16 bytes
+        // - amount (u64): 8 bytes
+        // - relayer_fee (u64): 8 bytes
         // - nonce ([u8; 32]): 32 bytes
-        // Total: 252 bytes, using 300 for headroom
+        // - order_era (u32): 4 bytes
+        // Total: 240 bytes, using 300 for headroom
         let mut data = Vec::with_capacity(300);
 
         PROTOCOL_NAME
@@ -117,6 +119,10 @@ impl InboundOrder {
             .nonce
             .serialize(&mut data)
             .expect("Nonce serialization failed");
+        order
+            .order_era
+            .serialize(&mut data)
+            .expect("Order era serialization failed");
 
         hash(&data)
     }

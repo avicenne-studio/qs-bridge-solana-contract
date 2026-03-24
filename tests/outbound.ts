@@ -211,6 +211,7 @@ describe("outbound test", () => {
       amount,
       relayerFee,
       nonce,
+      orderEra: 0,
     });
 
     const outboundTxMessage = pipe(

@@ -29,6 +29,7 @@ pub struct OutboundOrderArgs {
     pub amount: u64,
     pub relayer_fee: u64,
     pub nonce: [u8; 32],
+    pub order_era: u32,
 }
 
 pub fn process_outbound(
@@ -123,6 +124,7 @@ pub fn process_outbound(
         args.amount,
         args.relayer_fee,
         args.nonce,
+        args.order_era,
         outbound_bump,
     );
 
@@ -188,6 +190,7 @@ pub fn process_outbound(
         amount: args.amount,
         relayer_fee: args.relayer_fee,
         nonce: args.nonce,
+        order_era: args.order_era,
     };
 
     let event_data = outbound_event.try_to_vec()?;
