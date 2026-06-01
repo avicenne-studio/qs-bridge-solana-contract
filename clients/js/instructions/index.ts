@@ -6,6 +6,7 @@
  * @see https://github.com/codama-idl/codama
  */
 
+export * from "./acceptAdmin";
 export * from "./addOracle";
 export * from "./addPauser";
 export * from "./claimOracleFee";
@@ -17,4 +18,5 @@ export * from "./overrideOutbound";
 export * from "./pause";
 export * from "./removeOracle";
 export * from "./removePauser";
+export * from "./transferAdmin";
 export * from "./unpause";

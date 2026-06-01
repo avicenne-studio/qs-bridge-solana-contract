@@ -1,3 +1,4 @@
+pub mod process_accept_admin;
 pub mod process_add_oracle;
 pub mod process_add_pauser;
 pub mod process_claim_oracle_fee;
@@ -9,16 +10,25 @@ pub mod process_override_outbound;
 pub mod process_pause;
 pub mod process_remove_oracle;
 pub mod process_remove_pauser;
+pub mod process_transfer_admin;
 pub mod process_unpause;
 
 use borsh::BorshDeserialize;
 use {
-    crate::instruction::QSBridgeInstruction, process_add_oracle::process_add_oracle,
-    process_add_pauser::process_add_pauser, process_claim_oracle_fee::process_claim_oracle_fee,
-    process_claim_protocol_fee::process_claim_protocol_fee, process_inbound::process_inbound,
-    process_init_global_state::process_init_global_state, process_outbound::process_outbound,
-    process_override_outbound::process_override_outbound, process_pause::process_pause,
-    process_remove_oracle::process_remove_oracle, process_remove_pauser::process_remove_pauser,
+    crate::instruction::QSBridgeInstruction,
+    process_accept_admin::process_accept_admin,
+    process_add_oracle::process_add_oracle,
+    process_add_pauser::process_add_pauser,
+    process_claim_oracle_fee::process_claim_oracle_fee,
+    process_claim_protocol_fee::process_claim_protocol_fee,
+    process_inbound::process_inbound,
+    process_init_global_state::process_init_global_state,
+    process_outbound::process_outbound,
+    process_override_outbound::process_override_outbound,
+    process_pause::process_pause,
+    process_remove_oracle::process_remove_oracle,
+    process_remove_pauser::process_remove_pauser,
+    process_transfer_admin::process_transfer_admin,
     process_unpause::process_unpause,
 };
 
@@ -71,6 +81,14 @@ pub fn process_instruction(
         QSBridgeInstruction::Inbound(args) => {
             msg!("QS-BRIDGE: Processing inbound order");
             process_inbound(program_id, accounts, args)
+        }
+        QSBridgeInstruction::TransferAdmin(args) => {
+            msg!("QS-BRIDGE: Proposing admin transfer");
+            process_transfer_admin(program_id, accounts, args)
+        }
+        QSBridgeInstruction::AcceptAdmin => {
+            msg!("QS-BRIDGE: Accepting admin transfer");
+            process_accept_admin(program_id, accounts)
         }
         QSBridgeInstruction::ClaimProtocolFee => {
             msg!("QS-BRIDGE: Claiming protocol fee");

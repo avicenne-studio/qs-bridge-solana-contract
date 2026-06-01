@@ -5,6 +5,7 @@ use crate::processor::{
     process_add_oracle::AddOracleArgs, process_add_pauser::AddPauserArgs,
     process_inbound::InboundArgs, process_init_global_state::InitGlobalStateArgs,
     process_outbound::OutboundOrderArgs, process_override_outbound::OverrideOutboundArgs,
+    process_transfer_admin::TransferAdminArgs,
 };
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, ShankInstruction)]
@@ -45,9 +46,8 @@ pub enum QSBridgeInstruction {
     #[account(1, writable, name = "Global State", desc = "Global State")]
     #[account(2, name = "Pauser PDA", desc = "Pauser PDA")]
     Pause,
-    #[account(0, writable, signer, name = "Pauser", desc = "Pauser")]
+    #[account(0, writable, signer, name = "Admin", desc = "Admin")]
     #[account(1, writable, name = "Global State", desc = "Global State")]
-    #[account(2, name = "Pauser PDA", desc = "Pauser PDA")]
     Unpause,
     #[account(0, writable, signer, name = "Admin", desc = "Admin")]
     #[account(1, writable, name = "Global State", desc = "Global State")]
@@ -76,6 +76,12 @@ pub enum QSBridgeInstruction {
     #[account(14, writable, name = "Oracle 5 PDA", desc = "Oracle 5 PDA")]
     #[account(15, writable, name = "Oracle 6 PDA", desc = "Oracle 6 PDA")]
     Inbound(InboundArgs),
+    #[account(0, writable, signer, name = "Admin", desc = "Current admin")]
+    #[account(1, writable, name = "Global State", desc = "Global State")]
+    TransferAdmin(TransferAdminArgs),
+    #[account(0, writable, signer, name = "Pending Admin", desc = "Pending admin accepting the transfer")]
+    #[account(1, writable, name = "Global State", desc = "Global State")]
+    AcceptAdmin,
     #[account(0, writable, signer, name = "Protocol Fee Recipient", desc = "Protocol Fee Recipient")]
     #[account(1, writable, name = "Global State", desc = "Global State")]
     #[account(2, writable, name = "Token Mint", desc = "Token Mint")]

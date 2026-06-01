@@ -8,24 +8,26 @@ use solana_program::{
 
 use crate::{state::global_state::GlobalState, utils::deserialize_and_validate_pda};
 
-pub fn process_unpause(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+pub fn process_accept_admin(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     let acc_iter = &mut accounts.iter();
 
-    let admin_ai = next_account_info(acc_iter)?;
+    let pending_admin_ai = next_account_info(acc_iter)?;
     let global_state_ai = next_account_info(acc_iter)?;
 
-    if !admin_ai.is_signer {
+    if !pending_admin_ai.is_signer {
         return Err(ProgramError::MissingRequiredSignature);
     }
 
     let mut global_state: GlobalState =
         deserialize_and_validate_pda::<GlobalState>(program_id, global_state_ai)?;
 
-    if *admin_ai.key != global_state.admin {
-        return Err(ProgramError::IncorrectAuthority);
+    match global_state.pending_admin {
+        Some(expected) if expected == *pending_admin_ai.key => {}
+        _ => return Err(ProgramError::IncorrectAuthority),
     }
 
-    global_state.paused = false;
+    global_state.admin = *pending_admin_ai.key;
+    global_state.pending_admin = None;
 
     let mut data = global_state_ai.try_borrow_mut_data()?;
     global_state.serialize(&mut &mut data[..])?;

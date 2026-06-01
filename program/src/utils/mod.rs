@@ -7,7 +7,7 @@ pub fn deserialize_and_validate_pda<T: BorshDeserialize + PdaSeeds>(
     account: &AccountInfo,
 ) -> Result<T, ProgramError> {
     let data = account.try_borrow_data()?;
-    let obj = T::try_from_slice(&data).map_err(|_| ProgramError::InvalidAccountData)?;
+    let obj = T::deserialize(&mut data.as_ref()).map_err(|_| ProgramError::InvalidAccountData)?;
 
     let (parts, bump) = obj.pda_seeds();
     let bump_arr = [bump];

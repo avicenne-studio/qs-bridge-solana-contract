@@ -8,6 +8,7 @@ use crate::{constants::SEED_GLOBAL_STATE, state::Key, traits::PdaSeeds};
 pub struct GlobalState {
     pub key: Key,
     pub admin: Pubkey,
+    pub pending_admin: Option<Pubkey>,
     pub protocol_fee_recipient: Pubkey,
     pub token_mint: Pubkey,
     pub owed_protocol_fee: u64,
@@ -19,7 +20,8 @@ pub struct GlobalState {
 }
 
 impl GlobalState {
-    pub const SPACE: usize = 1 + 32 + 32 + 32 + 8 + 2 + 2 + 1 + 1 + 1;
+    // Option<Pubkey> serialises as 1 (discriminant) + 32 (pubkey) = 33 bytes
+    pub const SPACE: usize = 1 + 32 + 33 + 32 + 32 + 8 + 2 + 2 + 1 + 1 + 1;
     pub fn new(
         admin: Pubkey,
         protocol_fee_recipient: Pubkey,
@@ -34,6 +36,7 @@ impl GlobalState {
             owed_protocol_fee: 0,
             oracle_count: 0,
             admin,
+            pending_admin: None,
             protocol_fee_recipient,
             token_mint,
             bps_fee,

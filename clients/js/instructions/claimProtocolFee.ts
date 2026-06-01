@@ -31,7 +31,7 @@ import {
 import { QS_BRIDGE_PROGRAM_ADDRESS } from "../programs";
 import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
 
-export const CLAIM_PROTOCOL_FEE_DISCRIMINATOR = 10;
+export const CLAIM_PROTOCOL_FEE_DISCRIMINATOR = 12;
 
 export function getClaimProtocolFeeDiscriminatorBytes() {
   return getU8Encoder().encode(CLAIM_PROTOCOL_FEE_DISCRIMINATOR);

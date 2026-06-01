@@ -1,4 +1,4 @@
-use borsh::BorshSerialize;
+use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
@@ -8,7 +8,16 @@ use solana_program::{
 
 use crate::{state::global_state::GlobalState, utils::deserialize_and_validate_pda};
 
-pub fn process_unpause(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+pub struct TransferAdminArgs {
+    pub new_admin: Pubkey,
+}
+
+pub fn process_transfer_admin(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    args: TransferAdminArgs,
+) -> ProgramResult {
     let acc_iter = &mut accounts.iter();
 
     let admin_ai = next_account_info(acc_iter)?;
@@ -25,7 +34,7 @@ pub fn process_unpause(program_id: &Pubkey, accounts: &[AccountInfo]) -> Program
         return Err(ProgramError::IncorrectAuthority);
     }
 
-    global_state.paused = false;
+    global_state.pending_admin = Some(args.new_admin);
 
     let mut data = global_state_ai.try_borrow_mut_data()?;
     global_state.serialize(&mut &mut data[..])?;
