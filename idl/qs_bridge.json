@@ -326,11 +326,11 @@
       "name": "Unpause",
       "accounts": [
         {
-          "name": "pauser",
+          "name": "admin",
           "isMut": true,
           "isSigner": true,
           "docs": [
-            "Pauser"
+            "Admin"
           ]
         },
         {
@@ -339,14 +339,6 @@
           "isSigner": false,
           "docs": [
             "Global State"
-          ]
-        },
-        {
-          "name": "pauserPda",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Pauser PDA"
           ]
         }
       ],
@@ -593,6 +585,65 @@
       }
     },
     {
+      "name": "TransferAdmin",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Current admin"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "transferAdminArgs",
+          "type": {
+            "defined": "TransferAdminArgs"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 10
+      }
+    },
+    {
+      "name": "AcceptAdmin",
+      "accounts": [
+        {
+          "name": "pendingAdmin",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Pending admin accepting the transfer"
+          ]
+        },
+        {
+          "name": "globalState",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Global State"
+          ]
+        }
+      ],
+      "args": [],
+      "discriminant": {
+        "type": "u8",
+        "value": 11
+      }
+    },
+    {
       "name": "ClaimProtocolFee",
       "accounts": [
         {
@@ -655,7 +706,7 @@
       "args": [],
       "discriminant": {
         "type": "u8",
-        "value": 10
+        "value": 12
       }
     },
     {
@@ -737,7 +788,7 @@
       "args": [],
       "discriminant": {
         "type": "u8",
-        "value": 11
+        "value": 13
       }
     }
   ],
@@ -756,6 +807,12 @@
           {
             "name": "admin",
             "type": "publicKey"
+          },
+          {
+            "name": "pendingAdmin",
+            "type": {
+              "option": "publicKey"
+            }
           },
           {
             "name": "protocolFeeRecipient",
@@ -1293,6 +1350,18 @@
             "type": {
               "option": "u64"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TransferAdminArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newAdmin",
+            "type": "publicKey"
           }
         ]
       }

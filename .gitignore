@@ -1,3 +1,9 @@
 /target
 /node_modules
 .DS_Store
+
+# Editor & AI tools
+.vscode/
+.cursor/
+.idea/
+.windsurf/

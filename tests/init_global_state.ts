@@ -107,6 +107,7 @@ describe("initialize test", () => {
     assert.deepStrictEqual(decodedGlobalState, {
       key: Key.GlobalState,
       admin: admin.address,
+      pendingAdmin: { __option: "None" },
       paused: false,
       owedProtocolFee: 0n,
       oracleCount: 0,

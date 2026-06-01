@@ -1,4 +1,4 @@
-import { AccountInfoBytes, LiteSVM } from "litesvm";
+import { AccountInfoBytes, FailedTransactionMetadata, LiteSVM } from "litesvm";
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { getInitGlobalStateInstruction } from "../clients/js/instructions/initGlobalState";
 import {
@@ -207,18 +207,51 @@ describe("pauser test", () => {
     );
   });
 
-  it("should unpause the program", async () => {
-    const [pauser1Pda] = await findPauserPda({ pauser: pauser1.address });
-
+  it("pauser cannot unpause", async () => {
     const unpauseIx = getUnpauseInstruction({
-      pauser: pauser1,
+      admin: pauser1,
       globalState: globalStatePda,
-      pauserPda: pauser1Pda,
     });
 
     const txMessage = pipe(
       createTransactionMessage({ version: 0 }),
       (tx) => setTransactionMessageFeePayerSigner(pauser1, tx),
+      (tx) => appendTransactionMessageInstruction(unpauseIx, tx)
+    );
+
+    const signedTx = await signTransactionMessageWithSigners(txMessage);
+    const encodedTx = getTransactionEncoder().encode(signedTx);
+    const versionedTx = VersionedTransaction.deserialize(
+      new Uint8Array(encodedTx)
+    );
+    const result = svm.sendTransaction(versionedTx);
+    assert.ok(
+      result instanceof FailedTransactionMetadata,
+      "Transaction should have failed"
+    );
+
+    // Bridge should still be paused
+    const globalStateAccount = svm.getAccount(new PublicKey(globalStatePda));
+    assert.ok(globalStateAccount, "Global state account should exist");
+    const decodedGlobalState = getGlobalStateDecoder().decode(
+      new Uint8Array(globalStateAccount.data)
+    );
+    assert.strictEqual(
+      decodedGlobalState.paused,
+      true,
+      "Global state should still be paused"
+    );
+  });
+
+  it("admin can unpause", async () => {
+    const unpauseIx = getUnpauseInstruction({
+      admin,
+      globalState: globalStatePda,
+    });
+
+    const txMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx) => setTransactionMessageFeePayerSigner(admin, tx),
       (tx) => appendTransactionMessageInstruction(unpauseIx, tx)
     );
 
