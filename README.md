@@ -46,6 +46,15 @@ npm run test
 └── scripts/          # Build and code generation scripts
 ```
 
+## Deployment
+
+**Current program address:** `9HzXq7P6UEQjJCrvbPCt4eZRvkoJU9jo1mSssbMHkncQ`
+**Upgrade authority:** `oracle/.temp/solana-admin.json`
+
+See [oracle/DEVNET_TEMP_GUIDE.md § Deploy / Upgrade](../oracle/DEVNET_TEMP_GUIDE.md) for the full build → deploy → re-initialize procedure, including the account-size caveat when `OutboundOrder::SPACE` changes.
+
+The `oracle/src/clients/js/` and `hub/src/clients/js/` directories are **hand-maintained copies** of the generated client. After running `npm run idl:all`, manually mirror changes to `accounts/outboundOrder.ts`, `errors/qsBridge.ts`, `programs/qsBridge.ts`, and `pdas/` in both.
+
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and guidelines.
