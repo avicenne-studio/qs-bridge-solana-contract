@@ -21,10 +21,12 @@ pub struct OutboundOrder {
     pub nonce: [u8; 32],
     pub order_era: u32,
     pub bump: u8,
+    pub override_count: u8,
 }
 
 impl OutboundOrder {
-    pub const SPACE: usize = 1 + 4 + 4 + 32 + 32 + 32 + 32 + 8 + 8 + 32 + 4 + 1;
+    pub const SPACE: usize = 1 + 4 + 4 + 32 + 32 + 32 + 32 + 8 + 8 + 32 + 4 + 1 + 1;
+    pub const MAX_OVERRIDES: u8 = 3;
 
     pub fn new(
         network_out: u32,
@@ -51,6 +53,7 @@ impl OutboundOrder {
             nonce,
             order_era,
             bump,
+            override_count: 0,
         }
     }
 }

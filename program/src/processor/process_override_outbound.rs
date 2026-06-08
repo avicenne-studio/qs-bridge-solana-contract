@@ -51,6 +51,11 @@ pub fn process_override_outbound(
         return Err(ProgramError::IncorrectAuthority);
     }
 
+    if outbound_order.override_count >= OutboundOrder::MAX_OVERRIDES {
+        return Err(QSBridgeError::MaxOverridesReached.into());
+    }
+    outbound_order.override_count += 1;
+
     let oracle_fee = (outbound_order.amount as u128)
         .checked_mul(global_state.bps_fee.into())
         .and_then(|v| v.checked_div(10_000))
