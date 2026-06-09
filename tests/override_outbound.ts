@@ -1,4 +1,4 @@
-import { LiteSVM } from "litesvm";
+import { FailedTransactionMetadata, LiteSVM } from "litesvm";
 import { LAMPORTS_PER_SOL, PublicKey, SystemProgram } from "@solana/web3.js";
 import { getOverrideOutboundInstruction } from "../clients/js/instructions/overrideOutbound";
 import { getOutboundInstruction } from "../clients/js/instructions/outbound";
@@ -229,6 +229,7 @@ describe("override outbound test", () => {
       Array.from(originalToAddress),
     );
     assert.strictEqual(originalOrder.relayerFee, originalRelayerFee);
+    assert.strictEqual(originalOrder.overrideCount, 0, "override_count should start at 0");
 
     // Prepare override parameters
     const newToAddress = new Uint8Array(32).fill(2); // Different address
@@ -303,6 +304,7 @@ describe("override outbound test", () => {
       Array.from(updatedOrder.fromAddress),
       Array.from(originalOrder.fromAddress),
     );
+    assert.strictEqual(updatedOrder.overrideCount, 1, "override_count should be 1 after first override");
   });
 
   it("should override only to_address when relayer_fee is not provided", async () => {
@@ -379,5 +381,35 @@ describe("override outbound test", () => {
       beforeRelayerFee,
       "relayer_fee should remain unchanged",
     );
+    assert.strictEqual(afterOrder.overrideCount, 3, "override_count should be 3 after third override");
+  });
+
+  it("should reject a 4th override attempt", async () => {
+    const overrideIx = getOverrideOutboundInstruction({
+      caller: user,
+      globalState: globalStatePda,
+      outboundOrder: outboundOrderPda,
+      toAddress: new Uint8Array(32).fill(5),
+      relayerFee: null,
+    });
+
+    const txMessage = pipe(
+      createTransactionMessage({ version: 0 }),
+      (tx) => setTransactionMessageFeePayerSigner(user, tx),
+      (tx) => appendTransactionMessageInstruction(overrideIx, tx),
+    );
+
+    const signedTx = await signTransactionMessageWithSigners(txMessage);
+    const encodedTx = getTransactionEncoder().encode(signedTx);
+    const result = svm.sendTransaction(
+      VersionedTransaction.deserialize(new Uint8Array(encodedTx)),
+    );
+
+    assert.ok(result instanceof FailedTransactionMetadata, "4th override should fail");
+
+    // Verify order was not mutated
+    const orderAccount = svm.getAccount(new PublicKey(outboundOrderPda));
+    const order = getOutboundOrderDecoder().decode(orderAccount!.data);
+    assert.strictEqual(order.overrideCount, 3, "override_count should still be 3");
   });
 });

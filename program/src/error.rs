@@ -18,6 +18,8 @@ pub enum QSBridgeError {
     DuplicateOracleSignature,
     #[error("Invalid relayer fee")]
     InvalidRelayerFee,
+    #[error("Override attempt limit reached")]
+    MaxOverridesReached,
 }
 
 impl From<QSBridgeError> for ProgramError {

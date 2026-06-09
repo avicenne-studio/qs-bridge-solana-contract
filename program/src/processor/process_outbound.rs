@@ -102,6 +102,7 @@ pub fn process_outbound(
     if !outbound_order_ai.data_is_empty() {
         return Err(ProgramError::AccountAlreadyInitialized);
     }
+
     let (expected_outbound_pda, outbound_bump) = Pubkey::find_program_address(
         &[
             SEED_OUTBOUND_ORDER,

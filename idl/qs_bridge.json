@@ -985,6 +985,10 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "overrideCount",
+            "type": "u8"
           }
         ]
       }
@@ -1527,10 +1531,15 @@
       "code": 6,
       "name": "InvalidRelayerFee",
       "msg": "Invalid relayer fee"
+    },
+    {
+      "code": 7,
+      "name": "MaxOverridesReached",
+      "msg": "Override attempt limit reached"
     }
   ],
   "metadata": {
     "origin": "shank",
-    "address": "qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H"
+    "address": "9HzXq7P6UEQjJCrvbPCt4eZRvkoJU9jo1mSssbMHkncQ"
   }
 }

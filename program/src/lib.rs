@@ -11,4 +11,4 @@ pub mod utils;
 
 use solana_program::declare_id;
 
-declare_id!("qSBGtee9tspoDVmb867Wq6tcR3kp19XN1PbBVckrH7H");
+declare_id!("9HzXq7P6UEQjJCrvbPCt4eZRvkoJU9jo1mSssbMHkncQ");
